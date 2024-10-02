@@ -1,0 +1,39 @@
+API 요청
+	API 요청하면 track id 목록 저장, id 별로 가사 저장, 음악제목-가사 저장
+		: track id/가사  가져오기는 실행할 때만 작동, '불러오기' 버튼-'로딩' 창 구현
+	사용한 데이터는 DB 저장, 중복 배제
+
+	- 요청하면
+		client가 데이터 가공하여 DB 전달, DB에서 음악 목록 새로 받아옴(갱신)
+	- 요청 안하면
+		DB에서 음악 목록 받아옴
+
+API 주소
+	네트워크 탭에서 결과값 목록 요소 hover 하여 URI 얻음 
+	Header 설정
+		- Accept 
+			*/* : 기본값으로 불러옴, xml
+			application/json : json 형식으로 불러옴
+
+	음악ID 검색
+		https://apis.naver.com/vibeWeb/musicapiweb/vibe/v1/chart/track/total?start=1&display=100
+
+	가사 검색
+		https://apis.naver.com/vibeWeb/musicapiweb/vibe/v4/lyric/( trackId )
+
+사용자 행동 예측 
+	음악 목록, 원하는 음악 선택, 페이지 이동
+
+	타자 입력, 완료하면 결과 보여줌, 다시하기/뒤로가기
+
+스택
+	next.js : 사진 렌더링, 페이지 이동, API 호출 최적화
+	DB : firebase
+
+알고리즘
+	타수 계산 법
+			(입력한 문자열 길이 / 걸린 시간, 초) * 60초
+
+초기 배포
+	목업 데이터 음악 1곡, 입력창/목록창/결과창 UI 구현, 테스트케이스 작성
+	API 요청, DB 요청 기능 추후 추가
