@@ -4,4 +4,17 @@
 	- 설계
 	- UI 디자인 : 첫화면, 목차
 
-<--- UI 디자인, 테스트케이스 사용방법 --->
+24.10.3.
+	- UI 디자인 완료
+
+	- 입력창 UI 세부 조건
+	페이지 넘어가면 이전 타수 저장하고 입력할 때 다시 측정
+		: 페이지 수 만큼 타수 저장, 타수 평균 반환
+		: 타수, 정확도, 걸린 시간 - 위로 스크롤 가능
+
+	- 목차, Swiper 적용
+	**Error, swiper 적용 시 문자열 css, module css 불러오는 className 유의
+	->> "swiper-wrapper" 생략하면 다음 에러 발생, TypeError: Failed to execute 'getComputedStyle' on 'Window': parameter 1 is not of type 'Element'.
+
+<--- 목차 UI 구현 마무리, slide 데이터 props 구조 설계 --->
+

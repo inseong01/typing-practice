@@ -1,0 +1,24 @@
+/* swiper */
+.swiper {
+  width: 50%;
+
+  position: relative;
+}
+
+.swiper-wrapper {
+}
+
+.btn-wrap {
+  width: 70%;
+
+  display: flex !important;
+  justify-content: space-between;
+  position: relative;
+
+  --swiper-navigation-size: 25px;
+  --swiper-navigation-sides-offset: 0px;
+  --swiper-navigation-color: #aeaeae;
+}
+
+.btn-wrap .swiper-btn {
+}
