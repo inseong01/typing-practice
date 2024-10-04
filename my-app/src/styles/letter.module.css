@@ -1,0 +1,9 @@
+.textInput {
+  position: absolute;
+  border: none;
+  /* background-color: aliceblue; */
+  opacity: 0;
+}
+.textInput:focus {
+  outline: none;
+}

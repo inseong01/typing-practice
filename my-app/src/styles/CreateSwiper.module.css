@@ -1,24 +1,34 @@
-/* swiper */
-.swiper {
-  width: 50%;
+/* categories */
+.categories {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 100px;
 
   position: relative;
 }
 
-.swiper-wrapper {
+.main-title {
+  font-size: 40px;
+  cursor: default;
 }
 
 .btn-wrap {
-  width: 70%;
+  width: 20%;
 
-  display: flex !important;
+  display: flex;
   justify-content: space-between;
   position: relative;
-
-  --swiper-navigation-size: 25px;
-  --swiper-navigation-sides-offset: 0px;
-  --swiper-navigation-color: #aeaeae;
 }
 
-.btn-wrap .swiper-btn {
+.btn-wrap {
+  height: 10px;
+}
+.btn {
+  display: flex;
+  cursor: pointer;
 }

@@ -1,0 +1,15 @@
+.id-main {
+  width: 100%;
+}
+
+.title {
+  text-align: center;
+
+  margin-bottom: 20px;
+}
+
+.artist {
+  text-align: end;
+
+  margin-bottom: 30px;
+}

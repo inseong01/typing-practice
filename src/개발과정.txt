@@ -16,5 +16,50 @@
 	**Error, swiper 적용 시 문자열 css, module css 불러오는 className 유의
 	->> "swiper-wrapper" 생략하면 다음 에러 발생, TypeError: Failed to execute 'getComputedStyle' on 'Window': parameter 1 is not of type 'Element'.
 
-<--- 목차 UI 구현 마무리, slide 데이터 props 구조 설계 --->
+24.10.4.
+	- 초기화면 UI 구현
+	: UX 개선 - swiper 배제, 목록 넘김 정적 이동
 
+	- 목록 데이터 구조 설계
+	[
+		{
+			trackId: 음악ID,
+			currentRank: 순위,
+			trackTitle: 음악제목,
+			artists: 아티스트 목록,
+			lyric: ID_API - response.result.lyric.normalLyric.text('\n' 따라 줄바꿈),
+			albumGenres: 장르,
+			imageUrl: 앨범사진 링크,
+		}
+	]
+
+	- 공통 레이아웃 작업: _app
+
+	- 목업 데이터 생성: top100.json, musicList.json
+
+	- 입력창 UI 작업
+	: 음악제목, 아티스트, 가사
+		- 가사
+		: 화면 높이에 따라 페이지 줄 수 자동 조정 - 다음 페이지로 넘김 
+		->>	추후 반응형
+
+		- 가사 배열
+		: 작성 완료하면 객체의 다음 요소 - 다음 페이지 나옴
+		29, 34, 34, ... - 하나의 객체에 저장
+			첫 페이지면 가사 29줄 부여,
+			다음 페이지부터 가사 34줄 부여, 
+			페이지 작성 완료하면 배열 인덱스 증가
+		**다음 페이지 렌더링 할 때 함수 재실행 되어 가사 페이지 수 증가**
+		->> useMemo 사용 해결
+
+		- 가사 입력
+		input 숨기고 입력할 때 문자 비교
+			onChange: 첫 배열, 첫 요소 비교
+			spacebar: 넘어감
+			enter: 다음 배열 문장, 이전 비교 요소 삭제
+
+		문자 요소 필요, 비교 결과 문자에 className 부여, 
+			틀리면 빨강 맞으면 검정 지우면 회색
+			엔터 누르면 다음 줄 이동(다 적어야 사용 가능)
+
+<--- 입력창 구현 --->

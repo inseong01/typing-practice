@@ -1,21 +1,26 @@
 import styles from '@/styles/ContentsList.module.css';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 
-const list = Array(10)
-  .fill(1)
-  .map((v, i) => v + i);
+export default function ContentsList({ item }) {
+  const router = useRouter();
 
-export default function ContentsList() {
   return (
-    <div className={`${styles['list-arr']}`}>
-      {list.map((v) => {
+    <div className={styles['list-arr']}>
+      {item.map((value, idx) => {
+        const { trackId, currentRank, artists, trackTitle } = value;
+        const artistsName = artists.map((value) => value.artistName);
+
         return (
-          <div className={styles.list} key={v}>
-            <div className={styles.number}>{v}</div>
-            <div className={styles['content-box']}>
-              <div className={styles.title}>제목</div>
-              <div className={styles.descript}>아티스트</div>
+          <Link href={{ pathname: '/music/[id]', query: { id: trackId } }} key={idx}>
+            <div className={styles.list} onClick={() => {}}>
+              <div className={styles.number}>{currentRank}</div>
+              <div className={styles['content-box']}>
+                <div className={styles.title}>{trackTitle}</div>
+                <div className={styles.descript}>{artistsName}</div>
+              </div>
             </div>
-          </div>
+          </Link>
         );
       })}
     </div>

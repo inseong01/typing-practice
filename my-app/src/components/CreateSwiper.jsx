@@ -1,47 +1,42 @@
 import styles from '@/styles/CreateSwiper.module.css';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
 
-import { useEffect } from 'react';
-import Swiper from 'swiper';
-import { Navigation, Pagination } from 'swiper/modules';
+import { useState } from 'react';
 
 import ContentsList from './ContentsList';
+import top100 from '../../public/top100.json';
+import getMusicList from '@/function/getMusicList';
+import getListPage from '@/function/getListPage';
 
-const list = Array(3)
-  .fill(1)
-  .map((v, i) => v + i);
+const list = getMusicList(top100);
+const page = getListPage(list);
 
 export default function CreateSwiper() {
-  useEffect(() => {
-    new Swiper('.swiper', {
-      modules: [Navigation, Pagination],
-      speed: 400,
-      slidesPerView: 1,
-      slidesPerGroup: 1,
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-      },
-      allowTouchMove: false,
-    });
-  }, []);
+  const [pageNumber, setPageNumber] = useState(0);
+
+  function onClickNextPage() {
+    if (pageNumber < page.length - 1) {
+      setPageNumber((num) => num + 1);
+    }
+  }
+  function onClickPrevPage() {
+    if (pageNumber > 0) {
+      setPageNumber((num) => num - 1);
+    }
+  }
 
   return (
     <>
-      <div className={`${styles.swiper} swiper`}>
-        <div className={`${styles['swiper-wrapper']} swiper-wrapper`}>
-          {list.map((v) => (
-            <div className={'swiper-slide'} key={v}>
-              <ContentsList />
-            </div>
-          ))}
+      <div className={`${styles.categories}`}>
+        <div className={styles['main-title']}>목차</div>
+        <ContentsList item={page[pageNumber]} />
+        <div className={styles['btn-wrap']}>
+          <div className={styles.btn} onClick={onClickPrevPage}>
+            <img src="./img/prev_btn.png" alt="이전 페이지" />
+          </div>
+          <div className={styles.btn} onClick={onClickNextPage}>
+            <img src="./img/next_btn.png" alt="다음 페이지" />
+          </div>
         </div>
-      </div>
-      <div className={styles['btn-wrap']}>
-        <div className={`swiper-button-prev ${styles['swiper-btn']}`}></div>
-        <div className={`swiper-button-next ${styles['swiper-btn']}`}></div>
       </div>
     </>
   );

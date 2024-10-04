@@ -19,8 +19,61 @@ li {
   list-style: none;
 }
 
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
   }
+}
+
+/* _app 공통 레이아웃 */
+.wrap {
+  background-color: #dedede;
+
+  width: 100%;
+  height: 100vh;
+}
+
+.main {
+  background-color: white;
+
+  width: 1144px;
+  height: 100%;
+
+  margin: 0 auto;
+  padding: 30px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+
+  position: relative;
+}
+
+.content {
+  width: 76%;
+  height: 100%;
+}
+
+.framebox {
+  width: 80%;
+
+  display: flex;
+  justify-content: space-between;
+}
+.framebox.t {
+  top: 50px;
+}
+.framebox.b {
+  bottom: 50px;
+}
+.frame {
+  width: 20px;
+  height: 20px;
 }
