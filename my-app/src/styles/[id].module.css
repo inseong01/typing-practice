@@ -1,15 +1,44 @@
 .id-main {
   width: 100%;
 }
+.res-id-main {
+  text-align: start;
+}
 
 .title {
   text-align: center;
 
   margin-bottom: 20px;
 }
-
 .artist {
   text-align: end;
 
   margin-bottom: 30px;
+}
+
+.res .title,
+.res .artist {
+  text-align: start;
+}
+
+.res .title {
+  font-size: 1.5rem;
+  margin-bottom: 0;
+}
+.res .artist {
+  font-size: 1.5rem;
+}
+
+.res .results {
+  margin-bottom: 20px;
+}
+
+.res .nav {
+  display: inline-flex;
+  flex-direction: column;
+}
+.res .nav li {
+  color: #2666cd;
+  border-bottom: 1px solid #2666cd;
+  cursor: pointer;
 }

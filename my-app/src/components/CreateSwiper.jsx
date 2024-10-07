@@ -1,6 +1,6 @@
 import styles from '@/styles/CreateSwiper.module.css';
 
-import { useState } from 'react';
+import { createContext, useReducer, useState } from 'react';
 
 import ContentsList from './ContentsList';
 import top100 from '../../public/top100.json';
@@ -25,19 +25,17 @@ export default function CreateSwiper() {
   }
 
   return (
-    <>
-      <div className={`${styles.categories}`}>
-        <div className={styles['main-title']}>목차</div>
-        <ContentsList item={page[pageNumber]} />
-        <div className={styles['btn-wrap']}>
-          <div className={styles.btn} onClick={onClickPrevPage}>
-            <img src="./img/prev_btn.png" alt="이전 페이지" />
-          </div>
-          <div className={styles.btn} onClick={onClickNextPage}>
-            <img src="./img/next_btn.png" alt="다음 페이지" />
-          </div>
+    <div className={`${styles.categories}`}>
+      <div className={styles['main-title']}>목차</div>
+      <ContentsList item={page[pageNumber]} />
+      <div className={styles['btn-wrap']}>
+        <div className={styles.btn} onClick={onClickPrevPage}>
+          <img src="./img/prev_btn.png" alt="이전 페이지" />
+        </div>
+        <div className={styles.btn} onClick={onClickNextPage}>
+          <img src="./img/next_btn.png" alt="다음 페이지" />
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -1,6 +1,46 @@
 import "@/styles/globals.css";
+import { createContext, useReducer } from "react";
+
+export const Context = createContext(null);
+
+const initialArg = {
+  time: '',
+  accuracy: 0,
+  typingSpeed: 0,
+};
+function reducer(state, action) {
+  switch (action.type) {
+    case 'CALCULATE': {
+      const { start, end, sentenceArr, pageSheet } = action
+      const time = ((end - start) / 1000).toFixed(1);
+
+      let wrongTextCount = 0;
+      let totalTextLength = 0;
+      for (let i = 0; i < Object.keys(pageSheet).length; i++) {
+        // pageSheet와 동일하게 구조 변경 ->> [[pageSheet], [pageSheet]] 
+        for (let j = 0; j < sentenceArr.length; j++) {
+          for (let k = 0; k < sentenceArr[j].length; k++) {
+            totalTextLength += 1
+            if (pageSheet[i][j][k] === sentenceArr[j][k]) continue;
+            wrongTextCount += 1;
+          }
+        }
+      }
+      const accuracy = Number((((totalTextLength - wrongTextCount) / totalTextLength) * 100).toFixed(1));
+
+      const typingSpeed = Number(((totalTextLength / time) * 60).toFixed(1));
+      return {
+        ...state,
+        accuracy,
+        time,
+        typingSpeed
+      };
+    }
+  }
+}
 
 export default function App({ Component, pageProps }) {
+  const [state, dispatch] = useReducer(reducer, initialArg);
   return (
     <>
       <div className="wrap">
@@ -14,7 +54,9 @@ export default function App({ Component, pageProps }) {
             </div>
           </div>
           <div className="content">
-            <Component {...pageProps} />
+            <Context.Provider value={{ dispatch, state }}>
+              <Component {...pageProps} />
+            </Context.Provider>
           </div>
           <div className="framebox b">
             <div className="frame">

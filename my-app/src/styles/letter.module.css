@@ -7,3 +7,10 @@
 .textInput:focus {
   outline: none;
 }
+
+.correct {
+  color: #222;
+}
+.wrong {
+  color: red;
+}
