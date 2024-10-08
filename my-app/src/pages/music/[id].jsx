@@ -3,7 +3,7 @@ import musicList from '../../../public/musicList';
 import styles from '@/styles/[id].module.css';
 
 import { useRouter } from 'next/router';
-import { useContext, useMemo, useState } from 'react';
+import { Suspense, useContext, useMemo, useState } from 'react';
 import { Context } from '../_app';
 // pathname 설계된 링크명
 // asPath 브라우저에서 사용하고 있는 링크명
@@ -52,7 +52,7 @@ export default function Page() {
   }, [trackId]);
 
   // 나중에 click -> enter Event 변경
-  function onClickNextPage() {
+  function onEnterNextPage() {
     if (pageSheetIdx < Object.keys(pageSheet).length - 1) {
       setPageSheetIdx((prev) => prev + 1);
     }
@@ -60,29 +60,36 @@ export default function Page() {
   // 다시하기 함수
   function reset() {
     console.log('다시하기');
-    dispatch({ type: 'CALCULATE_ACCURACY' });
+    dispatch({ type: 'RESTART' });
+    setIsFinished(false);
+    setPageSheetIdx(0);
   }
 
   switch (isFinished) {
     case true: {
       return (
-        <div className={`${styles['id-main']} ${styles.res}`}>
-          <h1 className={`${styles.title}`}>{music.trackTitle}</h1>
-          <p className={`${styles.artist}`}>{artistName}</p>
-          <ul className={`${styles.results}`}>
-            <li>타수: {state.typingSpeed}</li>
-            <li>정확도: {state.accuracy}%</li>
-            <li>소요 시간: {state.time}초</li>
-          </ul>
-          <ul className={styles.nav}>
-            <li onClick={reset} title="try again">
-              다시하기
-            </li>
-            <li onClick={() => router.back()} title="go back">
-              돌아가기
-            </li>
-          </ul>
-        </div>
+        <Suspense fallback={<progress value={null} />}>
+          <div className={`${styles['id-main']} ${styles.res}`}>
+            <h1 className={`${styles.title}`}>{music.trackTitle}</h1>
+            <p className={`${styles.artist}`}>{artistName}</p>
+            <ul className={`${styles.results}`}>
+              <li>타수: {state.typingSpeed}</li>
+              <li>정확도: {state.accuracy}%</li>
+              <li>소요 시간: {state.time}초</li>
+            </ul>
+            <ul className={styles.nav}>
+              <li onClick={reset} title="try again">
+                다시하기
+              </li>
+              <li onClick={() => router.back()} title="go back">
+                돌아가기
+              </li>
+            </ul>
+            <div className={styles.pageNumber}>
+              <p className={styles.page}>1 / 1</p>
+            </div>
+          </div>
+        </Suspense>
       );
     }
     case false: {
@@ -92,11 +99,31 @@ export default function Page() {
             <div className={styles['id-main']}>
               <h1 className={styles.title}>{music.trackTitle}</h1>
               <p className={styles.artist}>{artistName}</p>
-              <Sentence pageSheet={pageSheet} pageSheetIdx={pageSheetIdx} setIsFinished={setIsFinished} />
+              <Sentence
+                pageSheet={pageSheet}
+                pageSheetIdx={pageSheetIdx}
+                setIsFinished={setIsFinished}
+                onEnterNextPage={onEnterNextPage}
+              />
+              <div className={styles.pageNumber}>
+                <p className={styles.page}>
+                  {pageSheetIdx + 1} / {Object.keys(pageSheet).length}
+                </p>
+              </div>
             </div>
           ) : (
             <div className={styles['id-main']}>
-              <Sentence pageSheet={pageSheet} pageSheetIdx={pageSheetIdx} setIsFinished={setIsFinished} />
+              <Sentence
+                pageSheet={pageSheet}
+                pageSheetIdx={pageSheetIdx}
+                setIsFinished={setIsFinished}
+                onEnterNextPage={onEnterNextPage}
+              />
+              <div className={styles.pageNumber}>
+                <p className={styles.page}>
+                  {pageSheetIdx + 1} / {Object.keys(pageSheet).length}
+                </p>
+              </div>
             </div>
           )}
         </>

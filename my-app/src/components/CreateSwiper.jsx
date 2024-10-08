@@ -1,6 +1,6 @@
 import styles from '@/styles/CreateSwiper.module.css';
 
-import { createContext, useReducer, useState } from 'react';
+import { useState } from 'react';
 
 import ContentsList from './ContentsList';
 import top100 from '../../public/top100.json';

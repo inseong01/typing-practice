@@ -78,4 +78,18 @@
 			isFinished 변수가 true이면 결과창 띄움, 아니면 입력창 띄움 
 			reducer, context 활용 결과 계산
 
-<--- 다음 페이지 이동 구현, sentenceArr 구조 pageSheet과 동일하게 변경, 다시하기: 초기화 --->
+24.10.8.
+	- 입력창 UI
+		: 작성한 문장 수가 기존 현재 페이지 문장수와 동일하면 
+			다음 페이지 이동, pageSheetIdx 증가 
+			totalSentenceArr에 sentenceArr 객체로 할당
+			sentenceArr 초기화
+
+	- 결과창 UI
+		- 다시하기
+			계산하면 totalSentenceArr 초기화(기존 메모리 유지 방지), 다시하기 누르면 결과값 초기화
+
+	- 테스트 코드 작성 : <Letter />
+		: Jest 설치, 사용방법, 초기설정, 코드작성
+
+<--- 테스트 코드 작성 : 컴포넌트, 배포 --->

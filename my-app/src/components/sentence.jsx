@@ -6,36 +6,41 @@ import { Context } from '@/pages/_app';
 
 let start;
 let isFirstTime = true;
+let totalSentenceArr = {};
 
-function Sentence({ pageSheet, pageSheetIdx, setIsFinished }) {
+function Sentence({ pageSheet, pageSheetIdx, setIsFinished, onEnterNextPage }) {
   const [typingtext, setTypingText] = useState('');
   const [sentenceNum, setSentenceNum] = useState(0);
   const [sentenceArr, setSentenceArr] = useState([]);
   const { dispatch, state } = useContext(Context);
 
-  // <--- input 위치, 기본값-입력값 비교 --->
   useEffect(() => {
-    // 작성 완료했을 때 (pageSheetIdx 증가 설정)
+    if (sentenceArr.length === 0) return;
+    // 한 페이지 작성 완료했을 때
+    if (sentenceArr.length === pageSheet[pageSheetIdx].length) {
+      totalSentenceArr[pageSheetIdx] = sentenceArr;
+      setSentenceArr([]);
+      onEnterNextPage();
+    }
+    // -----------------------------------------------
+    // 모든 페이지 작성 완료했을 때
     if (
-      Object.keys(pageSheet).length === pageSheetIdx + 1 &&
-      sentenceArr.length === pageSheet[pageSheetIdx].length
+      sentenceArr.length === pageSheet[pageSheetIdx].length &&
+      Object.keys(pageSheet).length === pageSheetIdx + 1
     ) {
       // 모달창 구현
       setIsFinished(true);
       // 결과 보여줌(계산)
-      // 타이머 마무리
       const end = Date.now();
-      console.log('end', end);
-
-      dispatch({ type: 'CALCULATE', start, end, sentenceArr, pageSheet });
+      dispatch({ type: 'CALCULATE', start, end, totalSentenceArr, pageSheet });
+      // 초기화
+      totalSentenceArr = {};
     }
   }, [sentenceArr]);
 
   useEffect(() => {
     if (!isFirstTime || !typingtext) return;
-    // 타이머 시작
     start = Date.now();
-    console.log('start', start);
     isFirstTime = false;
   }, [typingtext]);
 
@@ -76,15 +81,26 @@ function Sentence({ pageSheet, pageSheetIdx, setIsFinished }) {
           }}
           onKeyUp={(e) => {
             console.log(pageSheet[pageSheetIdx][sentenceNum]);
-            if (
-              (e.key === 'Enter' && pageSheet[pageSheetIdx][sentenceNum].length === typingtext.length) ||
-              (e.key === 'Enter' && pageSheet[pageSheetIdx][sentenceNum][0] === '\n' && typingtext === '')
-            ) {
-              setSentenceArr((prev) => [...prev, typingtext]);
-              setSentenceNum((prev) => prev + 1);
-              setTypingText('');
-            } else if (e.key === 'Enter' && pageSheet[pageSheetIdx][sentenceNum].length > typingtext.length) {
-              alert('문장 전체를 입력해주세요');
+            switch (e.key) {
+              case 'Enter': {
+                if (
+                  pageSheet[pageSheetIdx][sentenceNum].length === typingtext.length ||
+                  (pageSheet[pageSheetIdx][sentenceNum][0] === '\n' && typingtext === '')
+                ) {
+                  setSentenceArr((prev) => [...prev, typingtext]);
+                  setSentenceNum((prev) => prev + 1);
+                  setTypingText('');
+                  break;
+                } else if (
+                  pageSheet[pageSheetIdx][sentenceNum].length > typingtext.length ||
+                  pageSheet[pageSheetIdx][sentenceNum].length < typingtext.length
+                ) {
+                  alert('문장 전체를 입력해주세요');
+                  break;
+                }
+              }
+              default: {
+              }
             }
           }}
         />

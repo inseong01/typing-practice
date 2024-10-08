@@ -11,17 +11,18 @@ const initialArg = {
 function reducer(state, action) {
   switch (action.type) {
     case 'CALCULATE': {
-      const { start, end, sentenceArr, pageSheet } = action
+      const { start, end, totalSentenceArr, pageSheet } = action
       const time = ((end - start) / 1000).toFixed(1);
 
       let wrongTextCount = 0;
       let totalTextLength = 0;
       for (let i = 0; i < Object.keys(pageSheet).length; i++) {
         // pageSheet와 동일하게 구조 변경 ->> [[pageSheet], [pageSheet]] 
-        for (let j = 0; j < sentenceArr.length; j++) {
-          for (let k = 0; k < sentenceArr[j].length; k++) {
+        for (let j = 0; j < totalSentenceArr[i].length; j++) {
+          console.log(totalSentenceArr, totalSentenceArr[i])
+          for (let k = 0; k < totalSentenceArr[i][j].length; k++) {
             totalTextLength += 1
-            if (pageSheet[i][j][k] === sentenceArr[j][k]) continue;
+            if (pageSheet[i][j][k] === totalSentenceArr[i][j][k]) continue;
             wrongTextCount += 1;
           }
         }
@@ -35,6 +36,13 @@ function reducer(state, action) {
         time,
         typingSpeed
       };
+    }
+    case 'RESET': {
+      return {
+        time: '',
+        accuracy: 0,
+        typingSpeed: 0,
+      }
     }
   }
 }

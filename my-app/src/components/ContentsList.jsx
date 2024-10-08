@@ -1,10 +1,7 @@
 import styles from '@/styles/ContentsList.module.css';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 
 export default function ContentsList({ item }) {
-  const router = useRouter();
-
   return (
     <div className={styles['list-arr']}>
       {item.map((value, idx) => {

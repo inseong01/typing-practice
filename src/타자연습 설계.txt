@@ -42,3 +42,29 @@ API 주소
 
 테스트 코드
 https://testing-library.com/docs/react-testing-library/intro
+
+	- 설치
+		1. Manual setup
+			npm install -D jest jest-environment-jsdom @testing-library/react @testing-library/jest-dom
+			npm init jest@latest
+		2. Add a test script to package.json
+			"test" : "jest"
+		참고 https://nextjs.org/docs/app/building-your-application/testing/jest
+
+	- 파일 초기설정
+		1. 
+			*.test.js 파일 생성 || test 폴더 생성
+		2. 
+			import '@testing-library/jest-dom'; // 선언
+
+	- 사용
+		1. test('테스트 코드명', () => {})
+			: 테스트케이스 생성, 두번째 인자에 실행할 내용 작성
+		2. render(<컴포넌트 />)
+			: <컴포넌트 /> 생성 역할, 부여받은 props가 있다면 props 부여 필요
+			**자식 컴포넌트가 있다면 그 컴포넌트도 렌더링, 자식의 props와 파일 요구함**
+			->> 자식 컴포넌트 Mock 처리
+		3. 테스트 기본 기능
+		jest: https://jestjs.io/docs/expect#tohavelengthnumber
+		4. 테스트 전용 DOM 선택자
+		React test library: https://testing-library.com/docs/queries/about

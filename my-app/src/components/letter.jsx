@@ -10,5 +10,11 @@ export default function Letter({ children, typingtext, sentenceNum, strNum, char
       : styles.wrong
     : cssName;
 
-  return children === '\n' ? <br /> : <span className={strCssName}>{children}</span>;
+  return children === '\n' ? (
+    <br data-testid="br" />
+  ) : (
+    <span data-testid="textDiv" className={strCssName}>
+      {children}
+    </span>
+  );
 }
