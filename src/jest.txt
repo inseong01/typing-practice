@@ -1,0 +1,30 @@
+- 자식 컴포넌트 목(mock) 처리
+jest.mock('../letter', () => ({ children }) => {
+  return <span>{children}</span>
+});
+
+- 유저 이벤트 생성 
+: addEventListner 동작 지시 가능
+import userEvent from '@testing-library/user-event';
+userEvent.setup()
+
+- useState() 처리
+: mockReturnValueOnce(value) || mockImplicationOnce(fn) 사용
+  체이닝 가능, 호출 횟수에 따라 체이닝 된 순번 값으로 변경, 상황에 따라 값 변경 가능
+
+- rerender()
+: 인자 재부여, 리렌더링 발생
+
+- window.alert
+: jest는 node.js 환경, 브라우저 API를 위해 window 메소드를 모킹
+spyOn(object, methodName)을 사용하여 해당 함수 추적 가능 // spyOn(window, 'alert')
+
+- 컴포넌트 렌더링
+: 인자 모두 부여해야 됨
+
+Jest 기본 기능
+jest: https://jestjs.io/docs/expect
+DOM 기본 기능
+jest-dom: https://github.com/testing-library/jest-dom?tab=readme-ov-file#tohaverole
+리액트 DOM 선택자
+React test library: https://testing-library.com/docs/queries/about

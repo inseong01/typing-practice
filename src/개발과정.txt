@@ -92,4 +92,17 @@
 	- 테스트 코드 작성 : <Letter />
 		: Jest 설치, 사용방법, 초기설정, 코드작성
 
-<--- 테스트 코드 작성 : 컴포넌트, 배포 --->
+24.10.10.
+	- npm run dev 오류 해결
+		**Disabled SWC as replacement for Babel because of custom Babel configuration "babel.config.js"
+		->> next.config.js 파일, 변수 추가
+
+	- sentence 컴포넌트 세분화
+		: <textInput />, <lyric_li />
+
+	- 테스트코드 작성
+		: <textInput />, <lyric_li />
+
+	- jest 활용 정리
+
+<--- 테스트 코드 작성 : <Sentence /> <ContentList /> <CreateSwiper /> <[id] /> --->

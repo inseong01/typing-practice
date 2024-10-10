@@ -100,6 +100,7 @@ export default function Page() {
               <h1 className={styles.title}>{music.trackTitle}</h1>
               <p className={styles.artist}>{artistName}</p>
               <Sentence
+                key={pageSheetIdx}
                 pageSheet={pageSheet}
                 pageSheetIdx={pageSheetIdx}
                 setIsFinished={setIsFinished}
@@ -114,6 +115,7 @@ export default function Page() {
           ) : (
             <div className={styles['id-main']}>
               <Sentence
+                key={pageSheetIdx}
                 pageSheet={pageSheet}
                 pageSheetIdx={pageSheetIdx}
                 setIsFinished={setIsFinished}

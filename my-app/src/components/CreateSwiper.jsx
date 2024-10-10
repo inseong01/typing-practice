@@ -2,7 +2,7 @@ import styles from '@/styles/CreateSwiper.module.css';
 
 import { useState } from 'react';
 
-import ContentsList from './ContentsList';
+import ContentsList from './contentsList';
 import top100 from '../../public/top100.json';
 import getMusicList from '@/function/getMusicList';
 import getListPage from '@/function/getListPage';
