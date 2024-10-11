@@ -4,7 +4,7 @@ import { createContext, useReducer } from "react";
 export const Context = createContext(null);
 
 const initialArg = {
-  time: '',
+  time: null,
   accuracy: 0,
   typingSpeed: 0,
 };
@@ -28,7 +28,6 @@ function reducer(state, action) {
         }
       }
       const accuracy = Number((((totalTextLength - wrongTextCount) / totalTextLength) * 100).toFixed(1));
-
       const typingSpeed = Number(((totalTextLength / time) * 60).toFixed(1));
       return {
         ...state,
@@ -37,9 +36,9 @@ function reducer(state, action) {
         typingSpeed
       };
     }
-    case 'RESET': {
+    case 'RESTART': {
       return {
-        time: '',
+        time: null,
         accuracy: 0,
         typingSpeed: 0,
       }

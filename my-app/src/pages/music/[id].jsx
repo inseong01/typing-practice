@@ -1,17 +1,16 @@
 import Sentence from '@/components/sentence';
+import ResultPage from '@/components/resultPage';
 import musicList from '../../../public/musicList';
 import styles from '@/styles/[id].module.css';
 
 import { useRouter } from 'next/router';
-import { Suspense, useContext, useMemo, useState } from 'react';
-import { Context } from '../_app';
+import { useMemo, useState } from 'react';
 // pathname 설계된 링크명
 // asPath 브라우저에서 사용하고 있는 링크명
 
 export default function Page() {
   const [pageSheetIdx, setPageSheetIdx] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
-  const { dispatch, state } = useContext(Context);
 
   const router = useRouter();
   // 객체 props 받기: query.id 사용하여 trakId 일치 값 반환
@@ -57,39 +56,16 @@ export default function Page() {
       setPageSheetIdx((prev) => prev + 1);
     }
   }
-  // 다시하기 함수
-  function reset() {
-    console.log('다시하기');
-    dispatch({ type: 'RESTART' });
-    setIsFinished(false);
-    setPageSheetIdx(0);
-  }
 
   switch (isFinished) {
     case true: {
       return (
-        <Suspense fallback={<progress value={null} />}>
-          <div className={`${styles['id-main']} ${styles.res}`}>
-            <h1 className={`${styles.title}`}>{music.trackTitle}</h1>
-            <p className={`${styles.artist}`}>{artistName}</p>
-            <ul className={`${styles.results}`}>
-              <li>타수: {state.typingSpeed}</li>
-              <li>정확도: {state.accuracy}%</li>
-              <li>소요 시간: {state.time}초</li>
-            </ul>
-            <ul className={styles.nav}>
-              <li onClick={reset} title="try again">
-                다시하기
-              </li>
-              <li onClick={() => router.back()} title="go back">
-                돌아가기
-              </li>
-            </ul>
-            <div className={styles.pageNumber}>
-              <p className={styles.page}>1 / 1</p>
-            </div>
-          </div>
-        </Suspense>
+        <ResultPage
+          setIsFinished={setIsFinished}
+          setPageSheetIdx={setPageSheetIdx}
+          music={music}
+          artistName={artistName}
+        />
       );
     }
     case false: {

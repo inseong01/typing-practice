@@ -6,9 +6,6 @@
   flex-direction: column;
   gap: 10px;
 }
-.res.id-main {
-  display: block;
-}
 
 .title {
   text-align: center;
@@ -24,32 +21,4 @@
 }
 .page {
   text-align: center;
-}
-
-.res .title,
-.res .artist {
-  text-align: start;
-}
-
-.res .title {
-  font-size: 1.5rem;
-  margin-bottom: 0;
-}
-.res .artist {
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-}
-
-.res .results {
-  margin-bottom: 20px;
-}
-
-.res .nav {
-  display: inline-flex;
-  flex-direction: column;
-}
-.res .nav li {
-  color: #2666cd;
-  border-bottom: 1px solid #2666cd;
-  cursor: pointer;
 }

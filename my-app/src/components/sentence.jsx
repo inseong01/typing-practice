@@ -5,7 +5,7 @@ import Lyric_li from './lyric_li';
 import { useContext, useEffect, useState } from 'react';
 import { Context } from '@/pages/_app';
 
-let start;
+let start = null;
 let isFirstTime = true;
 let totalSentenceArr = {};
 
@@ -34,6 +34,8 @@ function Sentence({ pageSheet, pageSheetIdx, setIsFinished, onEnterNextPage }) {
       const end = Date.now();
       dispatch({ type: 'CALCULATE', start, end, totalSentenceArr, pageSheet });
       totalSentenceArr = {};
+      start = null;
+      isFirstTime = true;
     }
   }, [sentenceArr]);
 
@@ -59,7 +61,7 @@ function Sentence({ pageSheet, pageSheetIdx, setIsFinished, onEnterNextPage }) {
           );
         })}
       </ul>
-      <label htmlFor="textInput" className={styles.labelTextInput}>
+      <label data-testid="label" htmlFor="textInput" className={styles.labelTextInput}>
         <TextInput
           typingtext={typingtext}
           setTypingText={setTypingText}

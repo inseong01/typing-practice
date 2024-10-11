@@ -1,4 +1,5 @@
 - 자식 컴포넌트 목(mock) 처리
+: 컴포넌트를 반환하려면 두번째 인자는 함수를 반환해야 함
 jest.mock('../letter', () => ({ children }) => {
   return <span>{children}</span>
 });
@@ -22,9 +23,24 @@ spyOn(object, methodName)을 사용하여 해당 함수 추적 가능 // spyOn(w
 - 컴포넌트 렌더링
 : 인자 모두 부여해야 됨
 
+- describe('', () => {})
+: test 모음, 테스트의 주제
+
+- test('', () => {})
+: 테스트의 세부사항, 독립적인 테스트 실행 블록, screen 공유되지 않음
+
+- beforeEach(() => {})
+: test 실행 전 실행, 전역변수 설정
+
+- getAllByRole()
+: 정규식 대입 안 됨, 문자열만 대입 가능
+
+- getByText()
+: 정확한 문자열을 찾음, 두번째 인자 설정으로 부분 일치 찾음 {exact: false}
+
 Jest 기본 기능
 jest: https://jestjs.io/docs/expect
 DOM 기본 기능
-jest-dom: https://github.com/testing-library/jest-dom?tab=readme-ov-file#tohaverole
+jest-dom: https://github.com/testing-library/jest-dom?tab=readme-ov-file
 리액트 DOM 선택자
 React test library: https://testing-library.com/docs/queries/about

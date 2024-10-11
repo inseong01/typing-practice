@@ -105,4 +105,11 @@
 
 	- jest 활용 정리
 
-<--- 테스트 코드 작성 : <Sentence /> <ContentList /> <CreateSwiper /> <[id] /> --->
+24.10.11.
+	- [id] 컴포넌트 세분화
+		:	<ResultPage />, <Sentence />
+
+	- 테스트코드 작성
+		: <Sentence /> <ContentList /> <CreateSwiper /> <ResultPage />
+
+<--- 테스트 코드 작성 : <[id] /> --->

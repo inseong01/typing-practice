@@ -14,3 +14,4 @@
 
 ### 보완 & 수정
 - 반응형 구현
+- className, DOM visible 여부 확인 코드 개선 및 모듈화
