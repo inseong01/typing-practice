@@ -112,4 +112,35 @@
 	- 테스트코드 작성
 		: <Sentence /> <ContentList /> <CreateSwiper /> <ResultPage />
 
-<--- 테스트 코드 작성 : <[id] /> --->
+24.10.14.
+	- 테스트코드 작성
+		: <[id] />, getListPage.js, getMusicList.js
+
+	**`NextRouter` was not mounted
+	->> https://nextjs.org/docs/messages/next-router-not-mounted
+		: getServerSideProps() 활용
+
+	- 초기화면 UX 개선
+		: 이용 불/가능 음악 가시화, 가사 미제공 음악 선택 시 링크이동 제한
+
+	- 문제 해결
+	**1. ESLint: Failed to load config "next/babel" to extend from.
+		.eslinttrc.json {"extends": ["next", "next/core-web-vitals"]}
+		**1.1. Parsing error: You appear to be using a native ECMAScript module configuration file,
+			.babelrc { "presets": ["next/babel"], "plugins": [] }
+			참고: https://nextjs.org/docs/pages/building-your-application/configuring/babel
+
+	**2. ESLint: Invalid Options: - Unknown options: useEslintrc, extensions - 'extensions' has been removed.
+		파일 import - 최신버전 오류, 8버전으로 재설치
+
+	**3. eslintrc.cjs to a dynamic import() which is available in all CommonJS modules.
+		config 파일 import 오류
+		**ESLint: debugOrig__default.default is not a function
+			동적 import 변경 오류, eslint.cjs 변경하지 말 것
+
+	->> 해결: 'type' 지원문제, eslint은 ECS 미지원, next 빌드할 때 eslint 무시 설정
+
+	- 배포
+
+<--- 개발 문서 작성, 추가 기능 개발 --->
+

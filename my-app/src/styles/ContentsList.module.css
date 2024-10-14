@@ -19,6 +19,9 @@
 
   position: relative;
 }
+.list-arr .list.noLyric {
+  color: rgb(190, 190, 190);
+}
 .list-arr .list::before {
   content: '';
   position: absolute;
@@ -42,6 +45,9 @@
   gap: 4px;
 
   cursor: pointer;
+}
+.list-arr .noLyric .content-box {
+  cursor: not-allowed;
 }
 
 /* content-box */

@@ -1,13 +1,13 @@
 export default function getListPage(list) {
   const page = [];
 
-  let listWrap = [];
+  let pageListWrap = [];
   for (let i = 0; i <= list.length; i++) {
-    if (listWrap.length >= 10) {
-      page.push(listWrap);
-      listWrap = [];
+    if (pageListWrap.length >= 10) {
+      page.push(pageListWrap);
+      pageListWrap = [];
     }
-    listWrap.push(list[i]);
+    pageListWrap.push(list[i]);
   }
 
   return page;

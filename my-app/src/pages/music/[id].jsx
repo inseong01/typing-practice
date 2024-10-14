@@ -3,20 +3,30 @@ import ResultPage from '@/components/resultPage';
 import musicList from '../../../public/musicList';
 import styles from '@/styles/[id].module.css';
 
-import { useRouter } from 'next/router';
 import { useMemo, useState } from 'react';
 // pathname 설계된 링크명
 // asPath 브라우저에서 사용하고 있는 링크명
 
-export default function Page() {
+export const getServerSideProps = async (data) => {
+  // musicList, API 요청으로 변경
+  const trackId = await data.query.id;
+  const music = await musicList.find((item) => item.trackId === Number(trackId));
+  const artistName = await music.artists.map((value) => value.artistName);
+
+  if (music.lyric.length === 0) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
+  return { props: { trackId, music, artistName } };
+};
+
+export default function Page({ trackId, music, artistName }) {
   const [pageSheetIdx, setPageSheetIdx] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
-
-  const router = useRouter();
-  // 객체 props 받기: query.id 사용하여 trakId 일치 값 반환
-  const trackId = router.query.id;
-  const music = musicList.find((item) => item.trackId === Number(trackId));
-  const artistName = music.artists.map((value) => value.artistName);
 
   // 함수 재실행 방지
   const pageSheet = useMemo(() => {
@@ -50,7 +60,6 @@ export default function Page() {
     return pageSheetObj;
   }, [trackId]);
 
-  // 나중에 click -> enter Event 변경
   function onEnterNextPage() {
     if (pageSheetIdx < Object.keys(pageSheet).length - 1) {
       setPageSheetIdx((prev) => prev + 1);

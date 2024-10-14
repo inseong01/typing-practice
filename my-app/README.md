@@ -1,40 +1,97 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 타자연습 개발 문서
+이 문서는 타자연습 프로젝트 개발 내용을 설명합니다. 
+## 목차
+### 1. 이해하기
+  1. **기능 소개**  
+     - 초기화면
+     - 입력화면
+     - 결과화면
+  2. **기능 작동 예시**  
+      - 초기화면
+        - 목차 생성
+        - 목차 넘김
+      - 입력화면
+        - 문장 생성
+        - 오타 표시
+      - 결과화면
+        - 결과 측정
+        - 다시하기
+        - 돌아가기
 
-## Getting Started
+  3. **JavaScript 활용 예시**  
+      - 초기화면
+        - 목차 생성
+        - 목차 넘김
+      - 입력화면
+        - 문장 생성
+        - 오타 표시
+      - 결과화면
+        - 결과 측정
+        - 다시하기
+        - 돌아가기
 
-First, run the development server:
+### 2. 활용하기   
+   - 첫번째 기능 
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### 3. 보완 사항
+   - 에러 처리
+   - 테스트 및 디버깅 가이드
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 1. 이해하기
+이 섹션은 타자연습 주요 기능과 작동 방식에 대해 설명합니다.   
+### 1.1. 기능 소개
+: 기능 어떻게 동작하는지 구조, 과정 안내, 사진 첨부     
+"~기능을 제공합니다."
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+---
+### 1.2. 기능 작동 예시
+: 기능 동작 예시, 사진/코드박스/gif 첨부
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+---
+<h3>첫번째 예시</h3>
+<p>
+  <b>상황</b>
+</p>
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+![](.gif)
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### 1.3. JavaScript 활용 예시
+: javascript 코드 안내 링크 연결, 링크 목록
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+| 개발 플랫폼  |  기능  |           참고           |
+| :---------: | :----: | :----------------------: |
+|      -      |   -    |       [ 예제 ](#)        |
+|      -      |   -    |       [ 예제 ](#)        |
+|      -      |   -    |       [ 예제 ](#)        |
+|      -      |   -    |       [ 예제 ](#)        |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 2. 활용하기  
+이 섹션은 JavaScript를 사용한 타자연습 기능 구현 방법을 안내합니다.   
+: javascript 코드 설명 
+### 2.1. 첫번째 기능
+---
+이번 차례는 ~을 안내합니다.
+- 초기설정
+- 요청
+- 반응
+- 활용
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## 3. 보완 사항 
+이 섹션은 타자연습 보완 사항에 대해 설명합니다.   
+### 에러 처리
+---
+이번 차례는 에러 처리를 안내합니다.   
+: 메시지 전송 실패 시 에러 처리 및 상태 코드 설명
 
-## Deploy on Vercel
+**00에러**    
+- 설명
+- 원인
+- 결과
+- 해결방안
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### 테스트 및 디버깅 가이드
+---
+이번 차례는 테스트 및 디버깅 가이드를 안내합니다.   
+: 기능별 테스트 및 디버깅 방법

@@ -1,4 +1,4 @@
-import styles from '@/styles/CreateSwiper.module.css';
+import styles from '@/styles/createSwiper.module.css';
 
 import { useState } from 'react';
 
@@ -29,11 +29,11 @@ export default function CreateSwiper() {
       <div className={styles['main-title']}>목차</div>
       <ContentsList item={page[pageNumber]} />
       <div className={styles['btn-wrap']}>
-        <div data-testid="btn_l" className={styles.btn} onClick={onClickPrevPage}>
-          <img src="./img/prev_btn.png" alt="이전 페이지" />
+        <div data-testid="btn_l" className={styles.btn} onClick={onClickPrevPage} title="이전 페이지">
+          <img src="./img/prev_btn.png" alt="이전 페이지 아이콘" />
         </div>
-        <div data-testid="btn_r" className={styles.btn} onClick={onClickNextPage}>
-          <img src="./img/next_btn.png" alt="다음 페이지" />
+        <div data-testid="btn_r" className={styles.btn} onClick={onClickNextPage} title="다음 페이지">
+          <img src="./img/next_btn.png" alt="다음 페이지 아이콘" />
         </div>
       </div>
     </div>
