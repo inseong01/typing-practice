@@ -2,7 +2,7 @@ import styles from '@/styles/createSwiper.module.css';
 
 import { useState } from 'react';
 
-import ContentsList from './contentsList';
+import SwiperSlides from './swiperSlides';
 import top100 from '../../public/top100.json';
 import getMusicList from '@/function/getMusicList';
 import getListPage from '@/function/getListPage';
@@ -27,7 +27,7 @@ export default function CreateSwiper() {
   return (
     <div className={`${styles.categories}`}>
       <div className={styles['main-title']}>목차</div>
-      <ContentsList item={page[pageNumber]} />
+      <SwiperSlides item={page[pageNumber]} />
       <div className={styles['btn-wrap']}>
         <div data-testid="btn_l" className={styles.btn} onClick={onClickPrevPage} title="이전 페이지">
           <img src="./img/prev_btn.png" alt="이전 페이지 아이콘" />

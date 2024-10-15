@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 userEvent.setup()
 
-import ContentsList from '../contentsList';
+import ContentsList from '../swiperSlides';
 import styles from '@/styles/ContentsList.module.css';
 
 const item = [

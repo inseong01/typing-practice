@@ -7,20 +7,19 @@ import { Context } from '@/pages/_app';
 
 let start = null;
 let isFirstTime = true;
-let totalSentenceArr = {};
+let totalSentenceObj = {};
 
 function Sentence({ pageSheet, pageSheetIdx, setIsFinished, onEnterNextPage }) {
-  // console.log(pageSheet, pageSheetIdx, setIsFinished, onEnterNextPage);
   const [typingtext, setTypingText] = useState('');
-  const [sentenceNum, setSentenceNum] = useState(0);
+  const [typingSentenceNum, setTypingSentenceNum] = useState(0);
   const [sentenceArr, setSentenceArr] = useState([]);
   const { dispatch, state } = useContext(Context);
-
+  console.log('sentenceArr', sentenceArr, 'typingSentenceNum', typingSentenceNum);
   useEffect(() => {
     if (sentenceArr.length === 0) return;
     // 한 페이지 작성 완료했을 때
     if (sentenceArr.length === pageSheet[pageSheetIdx].length) {
-      totalSentenceArr[pageSheetIdx] = sentenceArr;
+      totalSentenceObj[pageSheetIdx] = sentenceArr;
       setSentenceArr([]);
       onEnterNextPage();
     }
@@ -32,8 +31,8 @@ function Sentence({ pageSheet, pageSheetIdx, setIsFinished, onEnterNextPage }) {
     ) {
       setIsFinished(true);
       const end = Date.now();
-      dispatch({ type: 'CALCULATE', start, end, totalSentenceArr, pageSheet });
-      totalSentenceArr = {};
+      dispatch({ type: 'CALCULATE', start, end, totalSentenceObj, pageSheet });
+      totalSentenceObj = {};
       start = null;
       isFirstTime = true;
     }
@@ -54,9 +53,9 @@ function Sentence({ pageSheet, pageSheetIdx, setIsFinished, onEnterNextPage }) {
               key={i}
               ly={ly}
               typingtext={typingtext}
-              sentenceNum={sentenceNum}
-              strNum={i}
               sentenceArr={sentenceArr}
+              lyricSentenceNum={i}
+              typingSentenceNum={typingSentenceNum}
             />
           );
         })}
@@ -65,9 +64,9 @@ function Sentence({ pageSheet, pageSheetIdx, setIsFinished, onEnterNextPage }) {
         <TextInput
           typingtext={typingtext}
           setTypingText={setTypingText}
-          currentTextArr={pageSheet[pageSheetIdx][sentenceNum]}
           setSentenceArr={setSentenceArr}
-          setSentenceNum={setSentenceNum}
+          setTypingSentenceNum={setTypingSentenceNum}
+          currentTextArr={pageSheet[pageSheetIdx][typingSentenceNum]}
         />
       </label>
     </>

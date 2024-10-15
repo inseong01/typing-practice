@@ -5,7 +5,7 @@ export default function TextInput({
   setTypingText,
   currentTextArr,
   setSentenceArr,
-  setSentenceNum,
+  setTypingSentenceNum,
 }) {
   return (
     <input
@@ -28,7 +28,7 @@ export default function TextInput({
               (currentTextArr[0] === '\n' && typingtext === '')
             ) {
               setSentenceArr((prev) => [...prev, typingtext]);
-              setSentenceNum((prev) => prev + 1);
+              setTypingSentenceNum((prev) => prev + 1);
               setTypingText('');
               break;
             } else if (

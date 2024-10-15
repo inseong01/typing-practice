@@ -1,11 +1,22 @@
 import styles from '@/styles/letter.module.css';
 
-export default function Letter({ children, typingtext, sentenceNum, strNum, charNum, sentenceArr }) {
+export default function Letter({
+  children,
+  typingtext,
+  typingSentenceNum,
+  lyricSentenceNum,
+  lyricTextNum,
+  sentenceArr,
+}) {
   const cssName =
-    typingtext && strNum === sentenceNum ? (typingtext === children ? styles.correct : styles.wrong) : '';
+    typingtext && lyricSentenceNum === typingSentenceNum
+      ? typingtext === children
+        ? styles.correct
+        : styles.wrong
+      : '';
 
-  const strCssName = sentenceArr[strNum]
-    ? sentenceArr[strNum][charNum] === children
+  const strCssName = sentenceArr[lyricSentenceNum]
+    ? sentenceArr[lyricSentenceNum][lyricTextNum] === children
       ? styles.correct
       : styles.wrong
     : cssName;

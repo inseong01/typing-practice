@@ -1,6 +1,6 @@
 import Letter from './letter';
 
-export default function Lyric_li({ ly, typingtext, sentenceNum, strNum, sentenceArr }) {
+export default function Lyric_li({ ly, typingtext, typingSentenceNum, lyricSentenceNum, sentenceArr }) {
   return (
     <li data-testid="li">
       {ly.map((txt, idx) => {
@@ -8,10 +8,10 @@ export default function Lyric_li({ ly, typingtext, sentenceNum, strNum, sentence
           <Letter
             key={idx}
             typingtext={typingtext[idx]}
-            sentenceNum={sentenceNum}
-            strNum={strNum}
-            charNum={idx}
             sentenceArr={sentenceArr}
+            lyricTextNum={idx}
+            lyricSentenceNum={lyricSentenceNum}
+            typingSentenceNum={typingSentenceNum}
           >
             {txt}
           </Letter>

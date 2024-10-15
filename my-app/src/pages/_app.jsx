@@ -1,5 +1,5 @@
-import "@/styles/globals.css";
-import { createContext, useReducer } from "react";
+import '@/styles/globals.css';
+import { createContext, useReducer } from 'react';
 
 export const Context = createContext(null);
 
@@ -11,18 +11,16 @@ const initialArg = {
 function reducer(state, action) {
   switch (action.type) {
     case 'CALCULATE': {
-      const { start, end, totalSentenceArr, pageSheet } = action
+      const { start, end, totalSentenceObj, pageSheet } = action;
       const time = ((end - start) / 1000).toFixed(1);
 
       let wrongTextCount = 0;
       let totalTextLength = 0;
       for (let i = 0; i < Object.keys(pageSheet).length; i++) {
-        // pageSheet와 동일하게 구조 변경 ->> [[pageSheet], [pageSheet]] 
-        for (let j = 0; j < totalSentenceArr[i].length; j++) {
-          console.log(totalSentenceArr, totalSentenceArr[i])
-          for (let k = 0; k < totalSentenceArr[i][j].length; k++) {
-            totalTextLength += 1
-            if (pageSheet[i][j][k] === totalSentenceArr[i][j][k]) continue;
+        for (let j = 0; j < totalSentenceObj[i].length; j++) {
+          for (let k = 0; k < totalSentenceObj[i][j].length; k++) {
+            totalTextLength += 1;
+            if (pageSheet[i][j][k] === totalSentenceObj[i][j][k]) continue;
             wrongTextCount += 1;
           }
         }
@@ -33,7 +31,7 @@ function reducer(state, action) {
         ...state,
         accuracy,
         time,
-        typingSpeed
+        typingSpeed,
       };
     }
     case 'RESTART': {
@@ -41,7 +39,7 @@ function reducer(state, action) {
         time: null,
         accuracy: 0,
         typingSpeed: 0,
-      }
+      };
     }
   }
 }
@@ -76,5 +74,5 @@ export default function App({ Component, pageProps }) {
         </main>
       </div>
     </>
-  )
+  );
 }
