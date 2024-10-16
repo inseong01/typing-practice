@@ -449,7 +449,13 @@
   ```
   ```javascript
   // lyric_li.jsx
-  export default function Lyric_li({ ly, typingtext, typingSentenceNum, lyricSentenceNum, sentenceArr }) {
+  export default function Lyric_li({ 
+      ly, 
+      typingtext, 
+      sentenceArr 
+      typingSentenceNum, 
+      lyricSentenceNum, 
+    }) {
     return (
       <li>
         {ly.map((txt, idx) => {
@@ -472,7 +478,14 @@
 - 요청    
   ```javascript
   // letter.jsx
-  export default function Letter({ children, typingtext, typingSentenceNum, lyricSentenceNum, lyricTextNum, sentenceArr }) {
+  export default function Letter({ 
+      children, 
+      typingtext, 
+      typingSentenceNum, 
+      lyricSentenceNum, 
+      lyricTextNum, 
+      sentenceArr 
+    }) {
     const cssName =
       typingtext && lyricSentenceNum === typingSentenceNum ? 
       (typingtext === children ? styles.correct : styles.wrong) : '';
@@ -626,7 +639,13 @@
   ```
   ```javascript
   // textInput.jsx
-  export default function TextInput({ typingtext, setTypingText, currentTextArr, setSentenceArr, setTypingSentenceNum }) {
+  export default function TextInput({ 
+      typingtext, 
+      setTypingText, 
+      currentTextArr, 
+      setSentenceArr, 
+      setTypingSentenceNum 
+    }) {
     return (
       <input
         id="textInput"
@@ -884,6 +903,67 @@ describe('[id] DOM check test : ', () => {
 
 > [Next Errors 공식 문서 참고](https://nextjs.org/docs/messages/next-router-not-mounted)
 
+### ESLint: Failed to load config "next/babel" to extend from.    
+---
+`ESLint "next/babel"`을 불러오지 못할 때 발생하는 오류입니다.    
+프로젝트를 빌드할 때 발생할 수 있습니다.    
+
+****next/babel****을 ****next****로 수정하여 해결할 수 있습니다.
+
+**.eslinttrc.json 파일수정** 
+```
+{
+  "extends": ["next", "next/core-web-vitals"]
+}
+```
+
+### Parsing error: You appear to be using a native ECMAScript module configuration file,    
+---
+파일 내용을 분석할 때 발생하는 오류입니다.    
+**.eslinttrc.json** 파일에서 `next/babel`을 `next`로 수정하고 빌드할 때 발생할 수 있습니다.  
+
+루트 디렉터리에 **.babelrc** 파일을 추가하여 해결할 수 있습니다.
+
+**.babelrc 파일생성**
+```
+{ 
+  "presets": ["next/babel"], "plugins": []
+}
+```
+> [Next babel 공식 문서 참고](https://nextjs.org/docs/pages/building-your-application/configuring/babel)
+
+### eslintrc.cjs to a dynamic import() which is available in all CommonJS modules.
+---
+**eslintrc** 파일을 불러오는 유형이 일치하지 않을 때 발생하는 오류입니다.   
+프로젝트를 빌드할 때 **package.json, type: module**일 때 발생할 수 있습니다.
+
+`ESlint`는 **commonJS** 방식을 사용하기 때문에 **type: module** 방식으로 불러올 수 없습니다.    
+`eslintrc.cjs` 파일을 동적 호출로 변경하면 `eslintrc.cjs` 내부 변수가 인식되지 않아 또 다른 오류를 발생합니다.    
+
+`ESlint` 빌드 오류는 `next.config.mjs` 파일에 변수를 추가하여 해결할 수 있습니다.
+```js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true,
+  }
+};
+export default nextConfig;
+```
+
+### ESLint: Invalid Options: - Unknown options: useEslintrc, extensions - 'extensions' has been removed.    
+---
+`ESLint` 옵션을 인식하지 못할 때 발생하는 오류입니다.   
+`ESLint` 최신 버전일 때 발생할 수 있습니다.     
+
+이전 버전으로 설치하여 해결할 수 있습니다.
+```
+npm remove eslint
+```
+```
+npm install eslint^8
+```
+
 ### 3.2. 테스트 가이드
 ---
 이번 차례는 테스트 및 디버깅 가이드를 안내합니다.   
@@ -916,7 +996,7 @@ describe('[id] DOM check test : ', () => {
 
 ### 테스트 파일 명명 규칙
 ---
-- **유닛 테스트**: `*.unit.test.js`  
+- **단위 테스트**: `*.unit.test.js`  
   개별 컴포넌트나 함수의 단일 기능을 테스트합니다.
 
 - **통합 테스트**: `*.integration.test.js`  
@@ -948,9 +1028,6 @@ describe('[id] DOM check test : ', () => {
 
 ### 테스트 유형
 ---
-### 유닛 테스트   
+### 단위 테스트   
 - 목적: 각 개별 모듈 또는 함수가 의도된 대로 동작하는지 확인.   
-- 항목: 
-### 통합 테스트   
-- 목적: 여러 모듈이나 컴포넌트가 함께 작동할 때 문제없이 연동되는지 확인.   
-- 항목: 
+- 항목: 태그 존재, 클래스명 일치, 함수 동작 정상 여부

@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
+    "test:unit": "jest unit",
     "test:watch": "jest --watch"
   },
   "dependencies": {

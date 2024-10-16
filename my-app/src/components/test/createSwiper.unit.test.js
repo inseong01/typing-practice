@@ -1,31 +1,31 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
+import classNameCheck from './classNameCheck.test';
 import userEvent from '@testing-library/user-event';
 userEvent.setup();
 
 import CreateSwiper from '../createSwiper';
 
-jest.mock('../ContentsList', () => ({ item }) => {
-  return <div>list</div>
+const testObj = {
+  compName: 'CreateSwiper',
+  argument: {},
+  classNameArr: ['categories', 'main-title', 'btn-wrap', 'btn', 'btn'],
+};
+
+jest.mock('../SwiperSlides', () => () => {
+  return <div>SwiperSlides</div>
 })
 
-describe('CreateSwiper style test : ', () => {
-  test('className', () => {
-    const classNameArr = ['', 'categories', 'main-title', 'mock', 'btn-wrap', 'btn', 'btn'];
-    render(<CreateSwiper />)
-    const tags = screen.getAllByRole('generic')
-    for (let i = 0; i < tags.length; i++) {
-      if (i === 0 || classNameArr[i] === 'mock') continue; // 첫번째, mock 태그 건너뜀
-      expect(tags[i]).toHaveClass(classNameArr[i])
-      expect(tags[i]).toBeInTheDocument()
-    }
-  })
-})
+describe('CreateSwiper unit test : ', () => {
+  render(<CreateSwiper />)
 
-describe('CreateSwiper function test :', () => {
+  // CSS 검사
+  classNameCheck(testObj);
+
   let pageLength = 3;
   let pageNumber = 1;
 
+  // 페이지 좌클릭 검사
   test('onClick left, decrease PageNumber', async () => {
     const onClickPrevPage = jest.fn(() => {
       if (pageNumber > 0) {
@@ -49,6 +49,7 @@ describe('CreateSwiper function test :', () => {
     expect(pageNumber).toBe(0);
   })
 
+  // 페이지 우클릭 검사
   test('onClick right, increase PageNumber', async () => {
     const onClickNextPage = jest.fn(() => {
       if (pageNumber < pageLength - 1) {

@@ -16,11 +16,18 @@ describe('[id] DOM check test : ', () => {
     props = data.props;
   })
 
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
+
   test('First page', () => {
     let page = 0
     const useStateSpy = jest.spyOn(React, 'useState')
       .mockReturnValueOnce([page, () => null])
       .mockReturnValueOnce([false, () => null])
+
+    expect(useStateSpy).toHaveBeenCalledTimes(0);
+    render(<Page music={props.music} artistName={props.artistName} pageSheet={props.pageSheet} />)
 
     const tags = []
     const checkClassNames = ['id-main', 'pageNumber', 'title', 'artist', 'page'];
@@ -41,7 +48,7 @@ describe('[id] DOM check test : ', () => {
       classNameCount[allTag[i].className] = ++classNameCount[allTag[i].className] || 1;
     }
 
-    for (let i = 0; i < Object.keys(classNameCount).length; i++) {
+    for (let i = 0; i < checkClassNames.length; i++) {
       let className;
       try {
         className = checkClassNames[i].replace(' ', '.');
@@ -59,10 +66,6 @@ describe('[id] DOM check test : ', () => {
       expect(selectedDOMTag).toBeVisible()
     }
 
-    expect(useStateSpy).toHaveBeenCalledTimes(0);
-
-    render(<Page trackId={props.trackId} music={props.music} artistName={props.artistName} />)
-
     const pageNumberText = screen.getByText(page + 1, { exact: false }).textContent;
     expect(pageNumberText).toBe(`${page + 1} / 2`);
 
@@ -79,7 +82,7 @@ describe('[id] DOM check test : ', () => {
 
     expect(useStateSpy).toHaveBeenCalledTimes(0);
 
-    render(<Page trackId={props.trackId} music={props.music} artistName={props.artistName} />)
+    render(<Page music={props.music} artistName={props.artistName} pageSheet={props.pageSheet} />)
 
     const tags = []
     const checkClassNames = ['id-main', 'pageNumber', 'page'];
@@ -142,9 +145,5 @@ describe('[id] DOM check test : ', () => {
     expect(useStateSpy).toHaveBeenCalledTimes(2);
     expect(screen.queryByText('resultPage')).toBeInTheDocument();
     expect(screen.queryByText('sentence')).not.toBeInTheDocument();
-  })
-
-  afterEach(() => {
-    jest.resetAllMocks()
   })
 })
