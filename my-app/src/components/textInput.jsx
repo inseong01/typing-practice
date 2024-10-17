@@ -1,5 +1,8 @@
 import styles from '@/styles/textInput.module.css';
 
+let cursorLeftValue = 0;
+let cursorTopValue = 2;
+
 export default function TextInput({
   typingtext,
   setTypingText,
@@ -18,7 +21,8 @@ export default function TextInput({
       value={typingtext}
       onClick={() => console.log('input text click')}
       onChange={(e) => {
-        setTypingText(e.target.value);
+        const txt = e.target.value;
+        setTypingText(txt);
       }}
       onKeyUp={(e) => {
         switch (e.key) {
@@ -30,6 +34,13 @@ export default function TextInput({
               setSentenceArr((prev) => [...prev, typingtext]);
               setTypingSentenceNum((prev) => prev + 1);
               setTypingText('');
+
+              const moveAmount = 25.5;
+              cursorTopValue += moveAmount;
+              cursorLeftValue = 0;
+              document.documentElement.style.setProperty('--cursor-top', `${cursorTopValue}px`);
+              document.documentElement.style.setProperty('--cursor-left', `${cursorLeftValue}px`);
+              console.log(e.key, moveAmount, `${cursorLeftValue}px`, `${cursorTopValue}px`);
               break;
             } else if (
               currentTextArr.length > typingtext.length ||
@@ -39,7 +50,29 @@ export default function TextInput({
               break;
             }
           }
+          case 'Backspace': {
+            if (cursorLeftValue <= 0) return;
+            const moveAmount = 14.7;
+
+            cursorLeftValue -= moveAmount;
+            document.documentElement.style.setProperty('--cursor-left', `${cursorLeftValue}px`);
+            console.log(e.key, moveAmount, `${cursorLeftValue}px`);
+            break;
+          }
+          case '': {
+            const moveAmount = 4;
+
+            cursorLeftValue += moveAmount;
+            document.documentElement.style.setProperty('--cursor-left', `${cursorLeftValue}px`);
+            console.log(e.key, moveAmount, `${cursorLeftValue}px`);
+            break;
+          }
           default: {
+            const moveAmount = 14.7;
+
+            cursorLeftValue += moveAmount;
+            document.documentElement.style.setProperty('--cursor-left', `${cursorLeftValue}px`);
+            console.log(e.key, moveAmount, `${cursorLeftValue}px`);
           }
         }
       }}

@@ -3,10 +3,10 @@ import styles from '@/styles/letter.module.css';
 export default function Letter({
   children,
   typingtext,
-  typingSentenceNum,
-  lyricSentenceNum,
-  lyricTextNum,
   sentenceArr,
+  lyricTextNum,
+  lyricSentenceNum,
+  typingSentenceNum,
 }) {
   const cssName =
     typingtext && lyricSentenceNum === typingSentenceNum
@@ -22,9 +22,9 @@ export default function Letter({
     : cssName;
 
   return children === '\n' ? (
-    <br data-testid="br" />
+    <br data-testid="word" />
   ) : (
-    <span data-testid="textDiv" className={strCssName}>
+    <span data-testid="word" className={strCssName}>
       {children}
     </span>
   );

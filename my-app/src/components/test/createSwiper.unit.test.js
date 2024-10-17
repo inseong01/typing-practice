@@ -1,31 +1,24 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import classNameCheck from './classNameCheck.test';
+import CreateSwiper from '../createSwiper';
 import userEvent from '@testing-library/user-event';
 userEvent.setup();
-
-import CreateSwiper from '../createSwiper';
-
-const testObj = {
-  compName: 'CreateSwiper',
-  argument: {},
-  classNameArr: ['categories', 'main-title', 'btn-wrap', 'btn', 'btn'],
-};
 
 jest.mock('../SwiperSlides', () => () => {
   return <div>SwiperSlides</div>
 })
 
 describe('CreateSwiper unit test : ', () => {
-  render(<CreateSwiper />)
-
-  // CSS 검사
-  classNameCheck(testObj);
-
   let pageLength = 3;
   let pageNumber = 1;
 
-  // 페이지 좌클릭 검사
+  test('className check', () => {
+    render(<CreateSwiper />);
+    const classNameArr = ['categories', 'main-title', 'btn-wrap', 'btn', 'btn']
+    classNameCheck(classNameArr);
+  })
+
   test('onClick left, decrease PageNumber', async () => {
     const onClickPrevPage = jest.fn(() => {
       if (pageNumber > 0) {
@@ -49,7 +42,6 @@ describe('CreateSwiper unit test : ', () => {
     expect(pageNumber).toBe(0);
   })
 
-  // 페이지 우클릭 검사
   test('onClick right, increase PageNumber', async () => {
     const onClickNextPage = jest.fn(() => {
       if (pageNumber < pageLength - 1) {

@@ -1,4 +1,5 @@
 import '@/styles/globals.css';
+import '@/styles/variables.css';
 import { createContext, useReducer } from 'react';
 
 export const Context = createContext(null);

@@ -2,7 +2,6 @@ import styles from '@/styles/swiperSlides.module.css';
 import Link from 'next/link';
 
 export default function SwiperSlides({ item }) {
-  console.log('Hi');
   return (
     <div className={styles['list-arr']}>
       {item.map((value, idx) => {

@@ -4,7 +4,6 @@ import classNameCheck from './classNameCheck.test';
 import SwiperSlides from '../swiperSlides';
 
 const testObj = {
-  compName: 'SwiperSlides',
   argument: {
     item: [
       {
@@ -111,7 +110,6 @@ const testObj = {
       },
     ]
   },
-  classNameArr: ['list-arr', 'list', 'number', 'content-box', 'title', 'descript'],
 };
 
 describe('SwiperSlides unit test : ', () => {
@@ -121,10 +119,10 @@ describe('SwiperSlides unit test : ', () => {
     render(<SwiperSlides item={item} />)
   })
 
-  // CSS 검사
-  classNameCheck(testObj);
+  test('className check', () => {
+    classNameCheck(['list-arr', 'list', 'number', 'content-box', 'title', 'descript']);
+  })
 
-  // textContext 검사
   test('TextContent is equal to the item value', () => {
     for (let i = 0; i < item.length; i++) {
       const { currentRank, artists, trackTitle } = item[i];
@@ -132,33 +130,32 @@ describe('SwiperSlides unit test : ', () => {
 
       switch (item[i]) {
         case currentRank: {
-          expect(screen.getByText('number').textContent).toEqual(currentRank);
-          expect(screen.getByText('number').textContent).not.toEqual('');
+          expect(screen.getByText('number').textContent).toBe(currentRank);
+          expect(screen.getByText('number').textContent).not.toBe('');
           break;
         }
         case trackTitle: {
-          expect(screen.getByText('title').textContent).toEqual(trackTitle);
-          expect(screen.getByText('title').textContent).not.toEqual('');
+          expect(screen.getByText('title').textContent).toBe(trackTitle);
+          expect(screen.getByText('title').textContent).not.toBe('');
           break;
         }
         case artists: {
-          expect(screen.getByText('descript').textContent).toEqual(artistsName);
-          expect(screen.getByText('descript').textContent).not.toEqual('');
+          expect(screen.getByText('descript').textContent).toBe(artistsName);
+          expect(screen.getByText('descript').textContent).not.toBe('');
           break;
         }
       }
     }
   })
 
-  // href 검사
   test('Each Link tags have a unique href', () => {
     const link_tags = screen.getAllByTestId('link');
-    // correct
+    // correct case
     for (let i = 0; i < item.length; i++) {
       expect(link_tags[i]).toHaveRole('link');
       expect(link_tags[i]).toHaveAttribute('href', `/music/${item[i].trackId}`);
     }
-    // wrong
+    // wrong case
     for (let i = 0; i < item.length; i++) {
       expect(link_tags[i]).not.toHaveRole('generic');
       expect(link_tags[i]).not.toHaveAttribute('href', `/music/${item[i].trackId - 1}`);

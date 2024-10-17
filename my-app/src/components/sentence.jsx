@@ -14,7 +14,7 @@ function Sentence({ pageSheet, pageSheetIdx, setIsFinished, onEnterNextPage }) {
   const [typingSentenceNum, setTypingSentenceNum] = useState(0);
   const [sentenceArr, setSentenceArr] = useState([]);
   const { dispatch, state } = useContext(Context);
-  console.log('sentenceArr', sentenceArr, 'typingSentenceNum', typingSentenceNum);
+
   useEffect(() => {
     if (sentenceArr.length === 0) return;
     // 한 페이지 작성 완료했을 때
@@ -59,6 +59,7 @@ function Sentence({ pageSheet, pageSheetIdx, setIsFinished, onEnterNextPage }) {
             />
           );
         })}
+        <div data-testid="cursor" className={styles.cursor}></div>
       </ul>
       <label data-testid="label" htmlFor="textInput" className={styles.labelTextInput}>
         <TextInput
