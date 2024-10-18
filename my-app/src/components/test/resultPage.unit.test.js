@@ -16,9 +16,13 @@ describe('ResultPage unit test : ', () => {
     useContext.mockReturnValue({
       dispatch: jest.fn(),
       state: {
-        "time": 2.3,
-        "accuracy": 57.1,
-        "typingSpeed": 182.6
+        time: 2.3,
+        accuracy: 57.1,
+        typingSpeed: 182.6,
+        cursor: {
+          top: 2,
+          left: 0,
+        },
       }
     })
 

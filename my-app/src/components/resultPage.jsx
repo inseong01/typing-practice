@@ -11,9 +11,14 @@ export default function ResultPage({ setIsFinished, setPageSheetIdx, music, arti
 
   // 다시하기 함수
   function reset() {
-    dispatch({ type: 'RESTART' });
+    dispatch({ type: 'RESET' });
     setIsFinished(false);
     setPageSheetIdx(0);
+  }
+  // 돌아가기 함수
+  function goBack() {
+    dispatch({ type: 'RESET' });
+    router.back();
   }
   return (
     <div className={`${styles['id-main']} ${styles.res}`}>
@@ -31,7 +36,7 @@ export default function ResultPage({ setIsFinished, setPageSheetIdx, music, arti
         <li onClick={reset} title="try again">
           다시하기
         </li>
-        <li onClick={() => router.back()} title="go back">
+        <li onClick={goBack} title="go back">
           돌아가기
         </li>
       </ul>

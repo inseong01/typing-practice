@@ -3,11 +3,31 @@ import { render, screen } from '@testing-library/react';
 import classNameCheck from './classNameCheck.test';
 import TextInput from '../textInput';
 import userEvent from '@testing-library/user-event';
+import { useContext } from 'react';
 userEvent.setup()
 
-const currentTextArr = ["그", "런", " ", "날", "이", " ", "있", "을", "까", "요", "?"]
+const currentTextArr = [["그", "런", " ", "날", "이", " ", "있", "을", "까", "요", "?"]]
+
+jest.mock('react', () => ({
+  ...jest.requireActual('react'),
+  useContext: jest.fn()
+}))
 
 describe('TextInput test : ', () => {
+  beforeEach(() => {
+    useContext.mockReturnValue({
+      dispatch: jest.fn(),
+      state: {
+        time: null,
+        accuracy: 0,
+        typingSpeed: 0,
+        cursor: {
+          top: 2,
+          left: 0,
+        },
+      }
+    })
+  })
 
   afterEach(() => {
     jest.clearAllMocks()
@@ -15,15 +35,19 @@ describe('TextInput test : ', () => {
 
   test('When TextInput is mounted, the input tag styles check', () => {
     const typingtext = '';
+    const sentenceArr = [];
     const setTypingText = jest.fn();
     const setSentenceArr = jest.fn();
+    const typingSentenceNum = 0;
     const setTypingSentenceNum = jest.fn();
 
     render(<TextInput
       typingtext={typingtext}
+      sentenceArr={sentenceArr}
       setTypingText={setTypingText}
       currentTextArr={currentTextArr}
       setSentenceArr={setSentenceArr}
+      typingSentenceNum={typingSentenceNum}
       setTypingSentenceNum={setTypingSentenceNum} />)
 
     // CSS 검사
@@ -39,16 +63,19 @@ describe('TextInput test : ', () => {
   })
 
   test('When typing event is on, the input value is correct', () => {
+    const sentenceArr = [];
     const setTypingText = jest.fn().mockReturnValueOnce('foo');
-    const typingtext = setTypingText();
     const setSentenceArr = jest.fn();
+    const typingSentenceNum = 0;
     const setTypingSentenceNum = jest.fn();
 
     render(<TextInput
-      typingtext={typingtext}
+      typingtext={setTypingText()}
+      sentenceArr={sentenceArr}
       setTypingText={setTypingText}
       currentTextArr={currentTextArr}
       setSentenceArr={setSentenceArr}
+      typingSentenceNum={typingSentenceNum}
       setTypingSentenceNum={setTypingSentenceNum} />)
 
     // setTypingText 호출 검사
@@ -58,7 +85,8 @@ describe('TextInput test : ', () => {
     expect(element).toHaveValue('foo');
   })
 
-  test('Count the Enter event', async () => {
+  test('Count Enter events', async () => {
+    const sentenceArr = [];
     const setTypingText = jest.fn()
       .mockReturnValueOnce('')
       .mockReturnValueOnce('f')
@@ -66,23 +94,30 @@ describe('TextInput test : ', () => {
       .mockReturnValueOnce('foofoofoofoof')
       .mockReturnValueOnce('foofoofoofo');
     const setSentenceArr = jest.fn();
+    const typingSentenceNum = 0;
     const setTypingSentenceNum = jest.fn();
+
+
     jest.spyOn(window, 'alert').mockImplementation(() => { });
 
     // 1번째 호출, setTypingText.length(0) !== currentTextArr.length(11)
     const { rerender } = render(<TextInput
       typingtext={setTypingText()}
+      sentenceArr={sentenceArr}
       setTypingText={setTypingText}
       currentTextArr={currentTextArr}
       setSentenceArr={setSentenceArr}
+      typingSentenceNum={typingSentenceNum}
       setTypingSentenceNum={setTypingSentenceNum} />)
 
     const rerenderComponent = (typingtext) => {
       return rerender(<TextInput
         typingtext={typingtext}
+        sentenceArr={sentenceArr}
         setTypingText={setTypingText}
         currentTextArr={currentTextArr}
         setSentenceArr={setSentenceArr}
+        typingSentenceNum={typingSentenceNum}
         setTypingSentenceNum={setTypingSentenceNum} />)
     }
 

@@ -8,6 +8,10 @@ const initialArg = {
   time: null,
   accuracy: 0,
   typingSpeed: 0,
+  cursor: {
+    top: 2,
+    left: 0,
+  },
 };
 function reducer(state, action) {
   switch (action.type) {
@@ -35,12 +39,64 @@ function reducer(state, action) {
         typingSpeed,
       };
     }
-    case 'RESTART': {
+    case 'RESET': {
+      document.documentElement.style.setProperty('--cursor-top', `2px`);
+      document.documentElement.style.setProperty('--cursor-left', `0px`);
       return {
+        ...state,
         time: null,
         accuracy: 0,
         typingSpeed: 0,
+        cursor: {
+          top: 2,
+          left: 0,
+        },
       };
+    }
+    case 'CURSORMOVE': {
+      const { tagWidth, tagHeight, tagLeft, tagTop } = action;
+      let cursorTopValue = state.cursor.top;
+      let cursorLeftValue = state.cursor.left;
+      switch (action.event) {
+        case 'Typing': {
+          cursorLeftValue += tagWidth;
+          document.documentElement.style.setProperty('--cursor-top', `${cursorTopValue}px`);
+          document.documentElement.style.setProperty('--cursor-left', `${cursorLeftValue}px`);
+          return {
+            ...state,
+            cursor: {
+              top: cursorTopValue,
+              left: cursorLeftValue,
+            },
+          };
+        }
+        case 'Enter': {
+          cursorTopValue = tagTop === 0 ? tagTop : tagHeight + state.cursor.top;
+          cursorLeftValue = 0;
+          document.documentElement.style.setProperty('--cursor-top', `${cursorTopValue}px`);
+          document.documentElement.style.setProperty('--cursor-left', `${cursorLeftValue}px`);
+          return {
+            ...state,
+            cursor: {
+              top: cursorTopValue,
+              left: cursorLeftValue,
+            },
+          };
+        }
+        case 'Backspace': {
+          cursorTopValue = state.cursor.top;
+          cursorLeftValue = tagLeft === 0 ? tagLeft : state.cursor.left - tagWidth;
+          document.documentElement.style.setProperty('--cursor-top', `${cursorTopValue}px`);
+          document.documentElement.style.setProperty('--cursor-left', `${cursorLeftValue}px`);
+          return {
+            ...state,
+            cursor: {
+              top: cursorTopValue,
+              left: cursorLeftValue,
+            },
+          };
+        }
+      }
     }
   }
 }

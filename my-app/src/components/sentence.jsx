@@ -33,8 +33,8 @@ function Sentence({ pageSheet, pageSheetIdx, setIsFinished, onEnterNextPage }) {
       const end = Date.now();
       dispatch({ type: 'CALCULATE', start, end, totalSentenceObj, pageSheet });
       totalSentenceObj = {};
-      start = null;
       isFirstTime = true;
+      start = null;
     }
   }, [sentenceArr]);
 
@@ -59,15 +59,17 @@ function Sentence({ pageSheet, pageSheetIdx, setIsFinished, onEnterNextPage }) {
             />
           );
         })}
-        <div data-testid="cursor" className={styles.cursor}></div>
+        <li data-testid="cursor" className={styles.cursor}></li>
       </ul>
       <label data-testid="label" htmlFor="textInput" className={styles.labelTextInput}>
         <TextInput
           typingtext={typingtext}
+          sentenceArr={sentenceArr}
           setTypingText={setTypingText}
           setSentenceArr={setSentenceArr}
+          currentTextArr={pageSheet[pageSheetIdx]}
+          typingSentenceNum={typingSentenceNum}
           setTypingSentenceNum={setTypingSentenceNum}
-          currentTextArr={pageSheet[pageSheetIdx][typingSentenceNum]}
         />
       </label>
     </>

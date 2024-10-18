@@ -29,7 +29,6 @@ export const getServerSideProps = async (data) => {
 export default function Page({ music, artistName, pageSheet }) {
   const [pageSheetIdx, setPageSheetIdx] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
-
   function onEnterNextPage() {
     if (pageSheetIdx < Object.keys(pageSheet).length - 1) {
       setPageSheetIdx((prev) => prev + 1);
