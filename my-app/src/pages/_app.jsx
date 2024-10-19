@@ -13,7 +13,7 @@ const initialArg = {
     left: 0,
   },
 };
-function reducer(state, action) {
+export function reducer(state, action) {
   switch (action.type) {
     case 'CALCULATE': {
       const { start, end, totalSentenceObj, pageSheet } = action;
@@ -71,7 +71,7 @@ function reducer(state, action) {
           };
         }
         case 'Enter': {
-          cursorTopValue = tagTop === 0 ? tagTop : tagHeight + state.cursor.top;
+          cursorTopValue = tagTop === 0 ? 2 : tagHeight + state.cursor.top;
           cursorLeftValue = 0;
           document.documentElement.style.setProperty('--cursor-top', `${cursorTopValue}px`);
           document.documentElement.style.setProperty('--cursor-left', `${cursorLeftValue}px`);

@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
+
 import classNameCheck from './classNameCheck.test';
 import SwiperSlides from '../swiperSlides';
 

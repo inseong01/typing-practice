@@ -1,36 +1,41 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { act, render, renderHook, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React, { useContext, useReducer } from 'react';
+
 import classNameCheck from './classNameCheck.test';
 import TextInput from '../textInput';
-import userEvent from '@testing-library/user-event';
-import { useContext } from 'react';
-userEvent.setup()
+import { reducer } from '@/pages/_app';
+import Sentence from '../sentence';
+userEvent.setup();
 
-const currentTextArr = [["그", "런", " ", "날", "이", " ", "있", "을", "까", "요", "?"]]
+const currentTextArr = [
+  ["그", "런", " ", "날", "이", " ", "있", "을", "까", "요", "?"],
+  ["두", " ", "번", "째", " ", "문", "장"]
+];
+const initialArg = {
+  time: null,
+  accuracy: 0,
+  typingSpeed: 0,
+  cursor: {
+    top: 2,
+    left: 0,
+  },
+};
 
 jest.mock('react', () => ({
   ...jest.requireActual('react'),
-  useContext: jest.fn()
+  useContext: jest.fn(),
 }))
 
 describe('TextInput test : ', () => {
+  let dispatchMock = jest.fn();
   beforeEach(() => {
-    useContext.mockReturnValue({
-      dispatch: jest.fn(),
-      state: {
-        time: null,
-        accuracy: 0,
-        typingSpeed: 0,
-        cursor: {
-          top: 2,
-          left: 0,
-        },
-      }
-    })
+    useContext.mockReturnValue({ dispatch: dispatchMock, initialArg });
   })
 
   afterEach(() => {
-    jest.clearAllMocks()
+    jest.clearAllMocks();
   })
 
   test('When TextInput is mounted, the input tag styles check', () => {
@@ -78,6 +83,8 @@ describe('TextInput test : ', () => {
       typingSentenceNum={typingSentenceNum}
       setTypingSentenceNum={setTypingSentenceNum} />)
 
+    // CSS 검사
+    classNameCheck(['textInput']);
     // setTypingText 호출 검사
     expect(setTypingText).toHaveBeenCalledTimes(1);
     // value 검사
@@ -182,5 +189,194 @@ describe('TextInput test : ', () => {
     expect(setSentenceArr).toHaveBeenCalledTimes(1);
     expect(setTypingSentenceNum).toHaveBeenCalledTimes(1);
     expect(window.alert).not.toHaveBeenCalledTimes(1);
+  })
+
+  describe('Dispatch type "CURSORMOVE"', () => {
+    test('is called by Enter', async () => {
+      const setTypingText = jest.fn();
+      const setSentenceArr = jest.fn();
+      const setTypingSentenceNum = jest.fn();
+
+      const { rerender } = render(<TextInput
+        typingtext={'그런 날이 있을까요?'}
+        sentenceArr={[]}
+        setTypingText={setTypingText}
+        currentTextArr={currentTextArr}
+        setSentenceArr={setSentenceArr}
+        typingSentenceNum={0}
+        setTypingSentenceNum={setTypingSentenceNum} />
+      )
+      expect(dispatchMock).toHaveBeenCalledTimes(0);
+
+      // 문장 넘김
+      await userEvent.keyboard('{Enter}')
+      expect(dispatchMock).toHaveBeenCalledWith({ type: 'CURSORMOVE', event: 'Enter', tagHeight: 25.5 });
+      expect(dispatchMock).toHaveBeenCalledTimes(1);
+
+      rerender(<TextInput
+        typingtext={'두 번째 문장'}
+        sentenceArr={['그런 날이 있을까요?']}
+        setTypingText={setTypingText}
+        currentTextArr={currentTextArr}
+        setSentenceArr={setSentenceArr}
+        typingSentenceNum={1}
+        setTypingSentenceNum={setTypingSentenceNum} />
+      )
+      expect(dispatchMock).toHaveBeenCalledTimes(1);
+
+      // 페이지 넘김
+      await userEvent.keyboard('{Enter}')
+      expect(dispatchMock).toHaveBeenCalledWith({ type: 'CURSORMOVE', event: 'Enter', tagTop: 0 });
+      expect(dispatchMock).toHaveBeenCalledTimes(2);
+    })
+
+    test('is called by Backspace', async () => {
+      const setTypingText = jest.fn();
+      const setSentenceArr = jest.fn();
+      const setTypingSentenceNum = jest.fn();
+
+      jest.doMock('../textInput', () => () => {
+        return <TextInput
+          typingtext={'두 '}
+          sentenceArr={["그런 날이 있을까요?"]}
+          setTypingText={setTypingText}
+          currentTextArr={currentTextArr}
+          setSentenceArr={setSentenceArr}
+          typingSentenceNum={1}
+          setTypingSentenceNum={setTypingSentenceNum} />
+      })
+
+      render(<Sentence
+        pageSheet={{ 0: currentTextArr }}
+        pageSheetIdx={0}
+        setIsFinished={() => { }}
+        onEnterNextPage={() => { }} />
+      )
+      expect(dispatchMock).toHaveBeenCalledTimes(0);
+
+      // 입력 글자 없는 상태, 문자 지우기 : tagWidth undefined, li 태그 식별 안 됨
+      await userEvent.keyboard('{Backspace}');
+      expect(dispatchMock).toHaveBeenCalledWith({ type: 'CURSORMOVE', event: 'Backspace', tagLeft: 0 });
+      expect(dispatchMock).toHaveBeenCalledTimes(1);
+    })
+
+    test('is called by Typing(en)', async () => {
+      const setTypingText = jest.fn();
+      const setSentenceArr = jest.fn();
+      const setTypingSentenceNum = jest.fn();
+
+      jest.doMock('../textInput', () => () => {
+        return <TextInput
+          typingtext={''}
+          sentenceArr={[]}
+          setTypingText={setTypingText}
+          currentTextArr={currentTextArr}
+          setSentenceArr={setSentenceArr}
+          typingSentenceNum={1}
+          setTypingSentenceNum={setTypingSentenceNum} />
+      })
+
+      render(<Sentence
+        pageSheet={{ 0: currentTextArr }}
+        pageSheetIdx={0}
+        setIsFinished={() => { }}
+        onEnterNextPage={() => { }} />
+      )
+      expect(dispatchMock).toHaveBeenCalledTimes(0);
+
+      // 문자 입력
+      const txt = 'abcd'
+      await userEvent.keyboard(txt)
+      expect(dispatchMock).toHaveBeenCalledWith({ type: 'CURSORMOVE', event: 'Typing', tagWidth: 0 });
+      expect(dispatchMock).toHaveBeenCalledTimes(txt.length);
+    })
+
+    test('RESET state', () => {
+      const { result } = renderHook(() => useReducer(reducer, initialArg));
+      const [state, dispatch] = result.current;
+
+      expect(state.cursor.top).toBe(2);
+      expect(state.cursor.left).toBe(0);
+      act(() => dispatch({ type: "RESET" }));
+      const [updateState] = result.current;
+      expect(updateState.cursor.top).toBe(2);
+      expect(updateState.cursor.left).toBe(0);
+    })
+    test('Typing state', async () => {
+      const { result } = renderHook(() => useReducer(reducer, initialArg));
+      const [state, dispatch] = result.current;
+      let tagWidth = 10;
+
+      expect(state.cursor.top).toBe(2);
+      expect(state.cursor.left).toBe(0);
+      act(() => dispatch({ type: 'CURSORMOVE', event: 'Typing', tagWidth }));
+      const [updateState] = result.current;
+      expect(updateState.cursor.top).toBe(2);
+      expect(updateState.cursor.left).toBe(10);
+    })
+    test('Enter state', () => {
+      const { result } = renderHook(() => useReducer(reducer, initialArg));
+      const [state, dispatch] = result.current;
+      let tagTop = 0;
+      let tagHeight = 25.5;
+
+      expect(state.cursor.top).toBe(2);
+      expect(state.cursor.left).toBe(0);
+      act(() => dispatch({ type: 'CURSORMOVE', event: 'Enter', tagHeight }));
+      const [updateState1] = result.current;
+      expect(updateState1.cursor.top).toBe(27.5);
+      expect(updateState1.cursor.left).toBe(0);
+      act(() => dispatch({ type: 'CURSORMOVE', event: 'Enter', tagTop }));
+      const [updateState2] = result.current;
+      expect(updateState2.cursor.top).toBe(2);
+      expect(updateState2.cursor.left).toBe(0);
+    })
+    test('Backspace state', () => {
+      const { result } = renderHook(() => useReducer(reducer, initialArg));
+      const [state, dispatch] = result.current;
+      let tagWidth = 10;
+
+      expect(state.cursor.top).toBe(2);
+      expect(state.cursor.left).toBe(0);
+      act(() => dispatch({ type: 'CURSORMOVE', event: 'Backspace', tagWidth }));
+      const [updateState] = result.current;
+      expect(updateState.cursor.top).toBe(2);
+      expect(updateState.cursor.left).toBe(-10);
+    })
+    test('Each of states', () => {
+      const { result } = renderHook(() => useReducer(reducer, initialArg));
+      const [state, dispatch] = result.current;
+      let tagWidth = 10;
+      let tagTop = 0;
+      let tagHeight = 25.5;
+
+      expect(state.cursor.top).toBe(2);
+      expect(state.cursor.left).toBe(0);
+      // 문자 입력 1
+      act(() => dispatch({ type: 'CURSORMOVE', event: 'Typing', tagWidth }));
+      const [updateState1] = result.current;
+      expect(updateState1.cursor.top).toBe(2);
+      expect(updateState1.cursor.left).toBe(10);
+      // 문자 입력 2
+      act(() => dispatch({ type: 'CURSORMOVE', event: 'Typing', tagWidth }));
+      const [updateState2] = result.current;
+      expect(updateState2.cursor.top).toBe(2);
+      expect(updateState2.cursor.left).toBe(20);
+      // 문자 지움
+      act(() => dispatch({ type: 'CURSORMOVE', event: 'Backspace', tagWidth }));
+      const [updateState3] = result.current;
+      expect(updateState3.cursor.top).toBe(2);
+      expect(updateState3.cursor.left).toBe(10);
+      // 줄 바꿈
+      act(() => dispatch({ type: 'CURSORMOVE', event: 'Enter', tagHeight }));
+      const [updateState4] = result.current;
+      expect(updateState4.cursor.top).toBe(27.5);
+      expect(updateState4.cursor.left).toBe(0);
+      // 페이지 바꿈
+      act(() => dispatch({ type: 'CURSORMOVE', event: 'Enter', tagTop }));
+      const [updateState5] = result.current;
+      expect(updateState5.cursor.top).toBe(2);
+      expect(updateState5.cursor.left).toBe(0);
+    })
   })
 })

@@ -43,6 +43,20 @@ spyOn(object, methodName)을 사용하여 해당 함수 추적 가능 // spyOn(w
 - getByText()
 : 정확한 문자열을 찾음, 두번째 인자 설정으로 부분 일치 찾음 {exact: false}
 
+- useReducer 사용방법
+: renderHook() 객체 result 반환값 사용, act()로 dispatch 사용, 구조분해할당으로 선언
+  **updateState는 result가 같은 코드 내에 있어야 갱신 가능, useContext 갱신값 전달 불가
+      ㄴ 원인
+        : useContext가 갱신된 값을 직접 전달받지 못해서, 
+          리렌더링될 때마다 상태가 다시 할당되기 때문에,
+      ㄴ 해결
+        : renderHook과 act를 이용해 상태를 추적
+    예시) 
+    const { result } = renderHook(() => useReducer(reducer, initialArg));
+    const [state, dispatch] = result.current;
+    act(() => { dispatch({ type: "RESET" }) });
+    const [updateState] = result.current;
+
 Jest 기본 기능
 jest: https://jestjs.io/docs/expect
 DOM 기본 기능

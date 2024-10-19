@@ -1,9 +1,10 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { useContext } from 'react';
+
 import classNameCheck from './classNameCheck.test';
 import ResultPage from '../resultPage';
-import { useContext } from 'react';
-import userEvent from '@testing-library/user-event';
 userEvent.setup()
 
 jest.mock('react', () => ({

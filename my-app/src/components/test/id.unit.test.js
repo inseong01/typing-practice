@@ -1,8 +1,9 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
+import React from 'react';
+
 import classNameCheck from './classNameCheck.test';
 import Page, { getServerSideProps } from '@/pages/music/[id]';
-import React from 'react';
 
 let trackId;
 let props;

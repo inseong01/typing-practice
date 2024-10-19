@@ -1,8 +1,9 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import Sentence from '../sentence';
 import userEvent from '@testing-library/user-event';
 import { useContext } from 'react';
+
+import Sentence from '../sentence';
 userEvent.setup()
 
 const pageSheet = {

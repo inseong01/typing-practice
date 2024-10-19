@@ -1,8 +1,9 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
 import classNameCheck from './classNameCheck.test';
 import CreateSwiper from '../createSwiper';
-import userEvent from '@testing-library/user-event';
 userEvent.setup();
 
 jest.mock('../SwiperSlides', () => () => {

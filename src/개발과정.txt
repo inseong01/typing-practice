@@ -188,4 +188,8 @@
 			**Error, 엔터/백스페이스/입력 연타할 때 커서 정위치 불가**
 			->> ???
 
-<--- textInput.unit.test 테스트코드 작성, 개발 문서 작성 --->
+24.10.19.
+	- textInput.unit.test 테스트코드 작성
+		: cursor dispatch state 반환값 일치, dispatch 동작 검사  
+
+<--- 개발 문서 작성: 커서 기능 --->

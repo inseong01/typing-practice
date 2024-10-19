@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
+
 import Lyric_li from '../lyric_li';
 
 const ly = ["그", "런", " ", "날", "이", " ", "있", "을", "까", "요", "?"]
