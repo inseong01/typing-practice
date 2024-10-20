@@ -8,17 +8,8 @@
      - 결과화면
   2. **기능 작동 예시**  
       - 초기화면
-        - 목차생성
-        - 목차넘김
-        - 목록이동
       - 입력화면
-        - 문장생성
-        - 오타표시
-        - 커서표시
       - 결과화면
-        - 결과측정
-        - 다시하기
-        - 돌아가기
 
   3. **JavaScript 활용 예시**  
       - 초기화면
@@ -68,12 +59,13 @@
 
 ### 입력화면
 ---
-입력화면은 `문장생성`, `오타표시` 기능을 제공합니다.    
+입력화면은 `문장생성`, `오타표시`, `커서표시` 기능을 제공합니다.    
 
 `문장생성`은 하나의 함수를 거쳐 문장을 생성합니다. **splitLyric** 함수는 가사를 인자로 받습니다. 가사는 문장으로, 문장은 문자로 분할되어 페이지 당 지정한 문장 수를 배열로 가진 객체로 반환합니다. 반환된 객체는 페이지 숫자를 **key**로 가지고 있습니다. 페이지 숫자에 맞춰 해당 **key**가 가진 문장 배열을 화면에 생성합니다.
 
 `오타표시`는 생성된 문자와 입력한 문자의 일치를 나타냅니다. 입력한 문자와 입력하고 있는 문자, 두 종류의 경우로 구분하여 문자 일치여부를 확인합니다. 일치 여부에 따라 지정한 **className**을 부여합니다. 
 
+`커서표시`는 현재 입력할 문자를 표시합니다. `input` 속성을 이용하여 발생한 이벤트에 따라 **커서**가 움직입니다. **커서**는 **top**과 **left**의 `css` 속성에 변수가 적용되어 `Javascript`에서 픽셀값이 변동됩니다. 
 
 ### 결과화면
 ---
@@ -90,13 +82,7 @@
 
 <h3>초기화면</h3>
 <p>
-  <b>목차생성 (사진)</b>
-</p>
-
-![](../src/gif/listpage10.png)
-
-<p>
-  <b>목차넘김</b>
+  <b>목차생성, 목차넘김</b>
 </p>
 
 ![](../src/gif/next%20page.gif)
@@ -110,16 +96,11 @@
 ---
 <h3>입력화면</h3>
 <p>
-  <b>문장생성 (사진)</b>
+  <b>문장생성, 오타표시, 커서이동</b>
 </p>
 
-![](../src/gif/sentence0.png)
+![](../src/gif/typingScreen2.gif)
 
-<p>
-  <b>오타표시</b>
-</p>
-
-![](../src/gif/typingword.gif)
 
 ---
 <h3>결과화면</h3>
@@ -152,6 +133,7 @@
 |      -      |     -    | 목록이동 |     [ 예제 ](#213-목록이동)        |
 |      -      |  입력화면 | 문장생성 |     [ 예제 ](#221-문장생성)        |
 |      -      |     -    | 오타표시 |     [ 예제 ](#222-오타표시)        |
+|      -      |     -    | 커서표시 |     [ 예제 ](#223-커서표시)        |
 |      -      |  결과화면 | 결과측정 |     [ 예제 ](#231-결과측정)        |
 |      -      |     -    | 다시하기 |     [ 예제 ](#232-다시하기)        |
 |      -      |     -    | 돌아가기 |     [ 예제 ](#233-돌아가기)        |
@@ -535,7 +517,262 @@
 
   기존 문자와 입력 문자가 동일하면 **styles.correct**, 아니면 **styles.wrong** 변수를 **className**으로 부여한다. *문자열 X*
   > [Next 스타일링 공식 문서 참고](https://nextjs.org/docs/app/building-your-application/styling/css-modules)   
+
+### 2.2.3. 커서표시
+이번 차례는 커서표시 기능을 안내합니다.   
+
+- 초기설정
+  ```css
+  /* /styles/variables.css */
+  :root {
+    --cursor-top: 2px;
+    --cursor-left: 0px;
+  }
+  ```
+  ```javascript
+  import '@/styles/variables.css';
+
+  export const Context = createContext(null);
+
+  const initialArg = {
+    time: null,
+    accuracy: 0,
+    typingSpeed: 0,
+    cursor: {
+      top: 2,
+      left: 0,
+    },
+  };
+
+  export function reducer(state, action) {
+    switch (action.type) {
+      ...
+      case 'CURSORMOVE': {
+        const { tagWidth, tagHeight, tagLeft, tagTop } = action;
+        let cursorTopValue = state.cursor.top;
+        let cursorLeftValue = state.cursor.left;
+        switch (action.event) {
+          case 'Typing': {
+            cursorLeftValue += tagWidth;
+            document.documentElement
+              .style.setProperty('--cursor-top', `${cursorTopValue}px`);
+            document.documentElement
+              .style.setProperty('--cursor-left', `${cursorLeftValue}px`);
+            return {
+              ...state,
+              cursor: {
+                top: cursorTopValue,
+                left: cursorLeftValue,
+              },
+            };
+          }
+          case 'Enter': {
+            cursorTopValue = tagTop === 0 ? 
+              2 : tagHeight + state.cursor.top;
+            cursorLeftValue = 0;
+            document.documentElement
+              .style.setProperty('--cursor-top', `${cursorTopValue}px`);
+            document.documentElement
+              .style.setProperty('--cursor-left', `${cursorLeftValue}px`);
+            return {
+              ...state,
+              cursor: {
+                top: cursorTopValue,
+                left: cursorLeftValue,
+              },
+            };
+          }
+          case 'Backspace': {
+            cursorTopValue = state.cursor.top;
+            cursorLeftValue = tagLeft === 0 ? 
+              tagLeft : state.cursor.left - tagWidth;
+            document.documentElement
+              .style.setProperty('--cursor-top', `${cursorTopValue}px`);
+            document.documentElement
+              .style.setProperty('--cursor-left', `${cursorLeftValue}px`);
+            return {
+              ...state,
+              cursor: {
+                top: cursorTopValue,
+                left: cursorLeftValue,
+              },
+            };
+          }
+        }
+      }
+    }
+  }
+  ```
+
+- 요청    
+  ```javascript
+  // textInput.jsx
+  import { Context } from '@/pages/_app';
+
+  export default function TextInput({
+    typingtext,
+    sentenceArr,
+    setTypingText,
+    currentTextArr,
+    setSentenceArr,
+    typingSentenceNum,
+    setTypingSentenceNum,
+  }) {
+    const { dispatch, state } = useContext(Context);
+
+    return (
+      <input
+        ...
+        onKeyDown={...}
+        onCompositionStart={...}
+      />
+    );
+  }
+  ```
+- 반응    
+  문자를 입력하면 언어에 따라 해당 이벤트가 작동합니다.    
+
+  ```
+  영문: onKeyDown
+  조합형 입력 문자: onComposition
+  ```
+
+  **커서**는 색상이 변한 문자 다음에 위치해야 합니다. **커서**는 이벤트가 작동하면 입력되어야 할 문자의 크기 만큼 이동합니다. 문자는 태그로 감싸져 있어 문자 만큼의 너비를 가지고 있습니다. 태그 선택을 하기 위해 `입력한 문자 길이 - 1`을 인덱스로 활용합니다. 너비 만큼 커서의 **left**를 변경할 수 있습니다. 커서의 **top**은 지정된 `px` 만큼 할당됩니다.
   
+  <!-- 동적으로 할당되는 클래스명을 추적하기 위해서 **MutationObserver** 생성자를 사용합니다. 
+  > **MutationObserver**는 **DOM**의 변경사항을 추적하는 **API입니다**.    -->
+
+  <!-- MutationObserver 왜 사용했는지, 없어도 잘 되는데? -->
+
+  클래스명이 동적으로 할당된 태그가 있다면 해당 태그의 **offsetWidth** 만큼 커서를 이동시킵니다. 할당된 클래스명이 없다면 커서를 이동시키지 않습니다. **isTagClassNameEmpty** 조건문은 커서 오작동 방지를 위해 적용합니다.
+
+  또한 사용자의 입력 길이를 제한하여 기존 문자 길이 이상의 **커서 이동**을 제한합니다.    
+
+- **\<input onKeyDown={} />**     
+  **onKeyDown**은 키보드 눌림을 감지합니다. 키보드 이벤트는 `e.key`로 구분하여 **Enter**, **Backspace**, **default**로 나뉘어져 있습니다.    
+  
+  **Enter**, **Backspace** 이벤트는 한영문에서 공동으로 사용됩니다.    
+
+  ```javascript
+  // switch case 'Enter'
+  onKeyDown={(e) => {
+    switch (e.key) {
+      case 'Enter': {
+        if (
+          currentTextArr[typingSentenceNum].length === typingtext.length ||
+          (currentTextArr[typingSentenceNum][0] === '\n' && typingtext === '')
+        ) {
+          ...
+          // 다음 페이지 커서 위치 초기화
+          if (sentenceArr.length + 1 === currentTextArr.length) {
+            dispatch({ type: 'CURSORMOVE', event: 'Enter', tagTop: 0 });
+            break;
+          }
+          // 커서 아래 이동
+          const tagHeight = 25.5;
+          dispatch({ type: 'CURSORMOVE', event: 'Enter', tagHeight });
+          break;
+        } 
+        ...
+      }
+  ```     
+  **다음 문장 이동**    
+  `Enter`를 눌렀을 때 현재 문장(**currentTextArr[typingSentenceNum]**)과 사용자가 입력한 문장(**typingtext**)의 문자열 길이가 동일하다면 **커서 top 위치**를 **tagHeight** 만큼 하단으로, **커서 left 위치**는 `0`으로 초기화 합니다.     
+  
+  **다음 페이지 이동**    
+  `Enter`를 눌렀을 때 현재 페이지 문장(**sentenceArr**)과 사용자가 입력한 문장(**currentTextArr**) 개수가 동일하다면 **커서 top 위치**를 `0`으로 초기화 합니다.
+
+  ```javascript
+  // switch case 'Backspace'
+      case 'Backspace': {
+        // 커서 이전 이동
+        const txt = e.target.value;
+        // 현재 문자 인덱스
+        const typingtextIdx = txt.length - 1;
+        if (typingtextIdx < 0) {
+          dispatch({ type: 'CURSORMOVE', event: 'Backspace', tagLeft: 0 });
+          break;
+        }
+        // 태그 선택
+        const liTags = document.getElementsByTagName('li');
+        const selectedTag = 
+          liTags[typingSentenceNum].children[typingtextIdx];
+        // 태그 크기
+        const tagWidth = selectedTag?.offsetWidth;
+        if (!tagWidth) return;
+        dispatch({ type: 'CURSORMOVE', event: 'Backspace', tagWidth });
+        break;
+      }
+  ```      
+  **문자 삭제**   
+  `Backspace`를 눌렀을 때 현재 입력된 마지막 문자 너비(**tagWidth**) 만큼 **커서** 좌측으로 이동시킵니다. 만약 문자 인덱스가 `0` 미만이면 **커서 left 위치**를 `0`으로 초기화 합니다. 삭제할 문자가 없는 경우 **커서 left 위치**는 `0`으로 할당됩니다.   
+
+  선택한 태그(**selectedTag**)는 커서가 뒤로 가야 할 너비의 태그여야 합니다. 
+  > **Enter**, **default**의 **selectedTag** 변수 선언과 다름으로 유의해야 합니다. 
+
+  ```javascript
+  // switch case default
+      default: {
+        // 영문, 숫자 외 입력 방지(한글 e.key: process)
+        if (e.key.length !== 1) return;
+        const txt = typingtext;
+        // 현재 문자 인덱스
+        const typingtextIdx = txt.length - 1;
+        // 작성 문자 길이 제한
+        if (currentTextArr[typingSentenceNum].length <= txt.length) {
+          setTypingText(
+            txt.slice(0, currentTextArr[typingSentenceNum].length - 1)
+          );
+          return;
+        }
+        // 태그 선택
+        const liTags = document.getElementsByTagName('li');
+        const selectedTag = 
+          liTags[typingSentenceNum].children[typingtextIdx + 1];
+        // 태그 크기
+        const tagWidth = selectedTag.offsetWidth;
+        dispatch({ type: 'CURSORMOVE', event: 'Typing', tagWidth });
+      }
+    }
+  }}
+  ```
+  **영문 숫자 입력**    
+  영문, 숫자, 특수문자는 **e.key.length**가 한 자리수로, 해당 문자를 입력했을 때 **default**문을 수행합니다. 입력한 문자열 길이(**typingtext**)가 기존 문자열 길이(**currentTextArr[typingSentenceNum]**) 이상일 때 필요 길이 이상으로 작성하는 것을 제한합니다.     
+
+  기존 문자열보다 입력한 문자열 길이가 작을 때 **커서**는 입력한 문자 너비(**tagWidth**) 만큼 우측으로 움직입니다. 기존 문자열 길이 이상일 경우 현재 입력하고 있는 문자(**typingtext**)는 `기존 문자열-1`의 크기로 할당됩니다. 
+  > 새로 입력한 문자도 추가되기 때문에 -1의 길이로 설정해야 기존 문자열의 길이를 초과하지 않습니다.
+  
+  영문, 숫자, 특수문자를 입력한 경우만 **default** 구문이 동작합니다. 
+
+- **\<input onCompositionStart={} />**    
+  **onCompositionStart**는 조합형 입력 시작을 감지합니다. **onCompositionStart** 이벤트는 **onKeyDown** 이벤트와 유사한 코드를 가지고 있어 동일한 결과값을 도출합니다.         
+  > **onComposition** 상태 세분화 : **onCompositionStart**, **onCompositionUpdate**, **onCompositionEnd**    
+
+  ```javascript
+  // textInput.jsx <input onCompositionStart={} />
+  onCompositionStart={(e) => {
+    const txt = e.target.value; // 비어있음
+    // 현재 문자 인덱스
+    const typingtextIdx = txt.length; // 기본 0
+    // 작성 문자 길이 제한
+    if (currentTextArr[typingSentenceNum].length < txt.length + 1) {
+      setTypingText(
+        txt.slice(0, 
+          currentTextArr[typingSentenceNum].length - 1));
+      return;
+    }
+    // 태그 선택
+    const liTags = document.getElementsByTagName('li');
+    const selectedTag = 
+      liTags[typingSentenceNum].children[typingtextIdx];
+    if (typingtextIdx < 0) return;
+    // 태그 크기
+    const tagWidth = selectedTag.offsetWidth;
+    dispatch({ type: 'CURSORMOVE', event: 'Typing', tagWidth });
+  }}
+  ```
+  **조합형 문자 입력**   
+  감지된 문자는 항상 빈 문자로 시작됩니다. **onKeyDown** 이벤트와 인덱스 변수 초기 선언 값이 다릅니다.   
 
 ### 2.3. 결과화면
 ---
@@ -551,8 +788,10 @@
     time: null,
     accuracy: 0,
     typingSpeed: 0,
+    ...
   };
-  function reducer(state, action) {
+
+  export function reducer(state, action) {
     switch (action.type) {
       case 'CALCULATE': {
         const { start, end, totalSentenceObj, pageSheet } = action;
@@ -665,12 +904,15 @@
   ```javascript
   // textInput.jsx
   export default function TextInput({ 
-      typingtext, 
-      setTypingText, 
-      currentTextArr, 
-      setSentenceArr, 
+      typingtext 
+      sentenceArr 
+      setTypingText 
+      setSentenceArr 
+      currentTextArr
+      typingSentenceNum 
       setTypingSentenceNum 
     }) {
+    ...
     return (
       <input
         id="textInput"
@@ -689,6 +931,7 @@
                 setSentenceArr((prev) => [...prev, typingtext]);
                 setTypingSentenceNum((prev) => prev + 1);
                 setTypingText('');
+                ...
                 break;
               } else if (
                 currentTextArr.length > typingtext.length ||
@@ -700,6 +943,7 @@
             }
           }
         }}
+        ...
       />
     );
   }
@@ -755,10 +999,12 @@
         <label htmlFor="textInput">
           <TextInput
             typingtext={typingtext}
+            sentenceArr={sentenceArr}
             setTypingText={setTypingText}
             setSentenceArr={setSentenceArr}
+            currentTextArr={pageSheet[pageSheetIdx]}
+            typingSentenceNum={typingSentenceNum}
             setTypingSentenceNum={setTypingSentenceNum}
-            currentTextArr={pageSheet[pageSheetIdx][typingSentenceNum]}
           />
         </label>
       </>
@@ -788,9 +1034,11 @@
   ```
 
 - 반응    
-  **sentenceArr** 변수는 한 페이지에서 입력한 문장의 배열이다. 배열 요소가 삽입될 때마다 `useEffect`가 실행된다. 마지막 페이지에서 입력한 문장 수가 기존 문장 수와 동일하고 현재 페이지가 마지막이라면 **isFinished** 변수를 `true`로 변환한다. 기록된 인자들은 **dispatch** 함수에 할당된다. `_app.jsx` 파일에서 **dispatch** 함수가 실행되고 함수에 할당된 변수들은 초기화 된다. 이후 `<ResultPage/>` 컴포넌트 화면에서 측정값이 표시된다. 
+  **sentenceArr** 변수는 한 페이지에서 입력한 문장의 배열입니다. 배열 요소가 삽입될 때마다 `useEffect`가 실행됩니다. 마지막 페이지에서 입력한 문장 수가 기존 문장 수와 동일하며 현재 페이지가 마지막이라면 **isFinished** 변수를 `true`로 변환합니다.     
+  
+  기록된 인자들은 **dispatch** 함수로 할당됩니다. `_app.jsx` 파일에서 작성한 **dispatch** 함수가 실행되어 함수에 할당된 변수들은 초기화 됩니다. 이후 `<ResultPage/>` 컴포넌트 화면에서 측정값이 표시됩니다. 
 
-  **dispatch** 결과값은 `useContext`를 활용하여 전역에서 가져올 수 있다. `_app.jsx` 파일에서 전역 변수로 **dispatch**, **state**를 할당하고 있다.
+  **dispatch** 결과값은 `_app.jsx` 파일에서 `Context.Provider`를 적용하여 컴포넌트 전역에서 가져올 수 있습니다. 현재 `_app.jsx` 파일에서 전역 변수로 **dispatch**, **state**를 할당하고 있습니다.
 
 
 ### 2.3.2. 다시하기
@@ -806,15 +1054,26 @@
     time: null,
     accuracy: 0,
     typingSpeed: 0,
+    cursor: {
+      top: 2,
+      left: 0,
+    },
   };
   function reducer(state, action) {
     switch (action.type) {
       ...
-      case 'RESTART': {
+      case 'RESET': {
+        document.documentElement.style.setProperty('--cursor-top', `2px`);
+        document.documentElement.style.setProperty('--cursor-left', `0px`);
         return {
+          ...state,
           time: null,
           accuracy: 0,
           typingSpeed: 0,
+          cursor: {
+            top: 2,
+            left: 0,
+          },
         };
       }
     }
@@ -843,7 +1102,7 @@
     const { dispatch, state } = useContext(Context);
     ...
     function reset() {
-      dispatch({ type: 'RESTART' });
+      dispatch({ type: 'RESET' });
       setIsFinished(false);
       setPageSheetIdx(0);
     }

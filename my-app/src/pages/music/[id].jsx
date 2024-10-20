@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import Sentence from '@/components/sentence';
 import ResultPage from '@/components/resultPage';
 import musicList from '../../../public/musicList';
 import styles from '@/styles/[id].module.css';
 import splitLyric from '@/function/splitLyric';
+import { Context } from '../_app';
 // pathname 설계된 링크명
 // asPath 브라우저에서 사용하고 있는 링크명
 
@@ -29,6 +30,12 @@ export const getServerSideProps = async (data) => {
 export default function Page({ music, artistName, pageSheet }) {
   const [pageSheetIdx, setPageSheetIdx] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
+  const { dispatch, state } = useContext(Context);
+
+  useEffect(() => {
+    dispatch({ type: 'RESET' });
+  }, []);
+
   function onEnterNextPage() {
     if (pageSheetIdx < Object.keys(pageSheet).length - 1) {
       setPageSheetIdx((prev) => prev + 1);

@@ -192,4 +192,18 @@
 	- textInput.unit.test 테스트코드 작성
 		: cursor dispatch state 반환값 일치, dispatch 동작 검사  
 
-<--- 개발 문서 작성: 커서 기능 --->
+24.10.20.
+	개발 문서 작성: 커서 기능
+		커서표시
+			생성된 문자 태그 만큼의 크기를 이동, 태그의 크기 offsetWidth 활용
+		onKeyDown
+			연속 문자 입력 처리하기 위해 onKeyDown에서 onKeyUp으로 변경
+			영문 입력 시 커서 이동 적용, 그외 언어 문자는 process로 return 적용
+		onComposition
+			영문 글자 외 인코딩이 필요한 문자를 처리하는 이벤트다
+			onCompositionStart, onCompositionUpdate, onCompositionEnd 3가지 상태로 구분된다.
+			onCompositionStart: 입력 시작할 때 동작
+			onCompositionUpdate: 입력 문자 추적, 현재 입력한 글자 이전 문자 출력
+			onCompositionEnd: 입력 끝날 때 동작,   
+
+<--- 한문 입력 동안 backspace 커서 동작 오류 수정: mutations 변환 활용, 개발 문서 커서 기능 수정 --->
