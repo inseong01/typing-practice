@@ -10,7 +10,6 @@
       - 초기화면
       - 입력화면
       - 결과화면
-
   3. **JavaScript 활용 예시**  
       - 초기화면
         - 목차생성
@@ -609,6 +608,9 @@
   // textInput.jsx
   import { Context } from '@/pages/_app';
 
+  let isFull = false;
+  let composedText = '';
+
   export default function TextInput({
     typingtext,
     sentenceArr,
@@ -623,8 +625,11 @@
     return (
       <input
         ...
+        onChange={...}
         onKeyDown={...}
         onCompositionStart={...}
+        onCompositionUpdate={...}
+        onCompositionEnd={...}
       />
     );
   }
@@ -634,35 +639,45 @@
 
   ```
   영문: onKeyDown
-  조합형 입력 문자: onComposition
+  조합형 입력 문자: onComposition 예) 한글, 중국어, 일본어
   ```
 
-  **커서**는 색상이 변한 문자 다음에 위치해야 합니다. **커서**는 이벤트가 작동하면 입력되어야 할 문자의 크기 만큼 이동합니다. 문자는 태그로 감싸져 있어 문자 만큼의 너비를 가지고 있습니다. 태그 선택을 하기 위해 `입력한 문자 길이 - 1`을 인덱스로 활용합니다. 너비 만큼 커서의 **left**를 변경할 수 있습니다. 커서의 **top**은 지정된 `px` 만큼 할당됩니다.
-  
-  <!-- 동적으로 할당되는 클래스명을 추적하기 위해서 **MutationObserver** 생성자를 사용합니다. 
-  > **MutationObserver**는 **DOM**의 변경사항을 추적하는 **API입니다**.    -->
+  **커서**는 색상이 변한 문자 다음에 위치해야 합니다. **커서**는 이벤트가 작동하면 입력되어야 할 문자의 크기 만큼 이동합니다. 문자는 태그로 감싸져 있어, 태그는 문자 만큼의 너비를 가지고 있습니다. 태그를 선택을 하기 위해 `입력한 문자 길이 - 1`을 인덱스로 활용합니다. 너비 만큼 **커서**의 **left**를 변경할 수 있습니다. **커서**의 **top**은 지정된 `px` 만큼 할당됩니다.
 
-  <!-- MutationObserver 왜 사용했는지, 없어도 잘 되는데? -->
+  `onComposition` 관련 이벤트 설정 시 `onKeyUp`, `onKeyDown` 이벤트는 동작하지 않습니다.
+  > 관련 이벤트: **onCompositionStart**, **onCompositionUpdate**, **onCompositionEnd**
 
-  클래스명이 동적으로 할당된 태그가 있다면 해당 태그의 **offsetWidth** 만큼 커서를 이동시킵니다. 할당된 클래스명이 없다면 커서를 이동시키지 않습니다. **isTagClassNameEmpty** 조건문은 커서 오작동 방지를 위해 적용합니다.
+- **\<input onChange={} />**     
 
-  또한 사용자의 입력 길이를 제한하여 기존 문자 길이 이상의 **커서 이동**을 제한합니다.    
+  ```javascript
+  onChange={(e) => {
+    const txt = e.target.value;
+    const generatedSentence = currentTextArr[typingSentenceNum];
+    // 작성 문자 길이 제한
+    if (generatedSentence.length >= txt.length) setTypingText(txt);
+    setTypingText((prev) => prev.slice(0, generatedSentence.length));
+  }}
+  ```
+  `onChange` 이벤트는 누르는 만큼 입력되기 때문에 **커서** 오작동을 발생시킵니다. 이를 위해 입력 길이를 제한합니다. 기존 문자 길이 이상을 입력할 때 **커서 이동**을 방지합니다.    
 
 - **\<input onKeyDown={} />**     
-  **onKeyDown**은 키보드 눌림을 감지합니다. 키보드 이벤트는 `e.key`로 구분하여 **Enter**, **Backspace**, **default**로 나뉘어져 있습니다.    
+  `onKeyDown`은 키보드 눌림을 감지합니다. 키보드 이벤트는 `e.key`로 구분하여 **Enter**, **Backspace**, **default**로 나뉘어져 있습니다.    
   
   **Enter**, **Backspace** 이벤트는 한영문에서 공동으로 사용됩니다.    
 
   ```javascript
   // switch case 'Enter'
   onKeyDown={(e) => {
+    const generatedSentence = currentTextArr[typingSentenceNum];
     switch (e.key) {
       case 'Enter': {
         if (
-          currentTextArr[typingSentenceNum].length === typingtext.length ||
-          (currentTextArr[typingSentenceNum][0] === '\n' && typingtext === '')
+           generatedSentence.length === typingtext.length ||
+          (generatedSentence[0] === '\n' && typingtext === '')
         ) {
           ...
+          isFull = false;
+
           // 다음 페이지 커서 위치 초기화
           if (sentenceArr.length + 1 === currentTextArr.length) {
             dispatch({ type: 'CURSORMOVE', event: 'Enter', tagTop: 0 });
@@ -677,14 +692,17 @@
       }
   ```     
   **다음 문장 이동**    
-  `Enter`를 눌렀을 때 현재 문장(**currentTextArr[typingSentenceNum]**)과 사용자가 입력한 문장(**typingtext**)의 문자열 길이가 동일하다면 **커서 top 위치**를 **tagHeight** 만큼 하단으로, **커서 left 위치**는 `0`으로 초기화 합니다.     
+  `Enter`를 눌렀을 때 생성된 문장(**generatedSentence**)과 사용자가 입력한 문장(**typingtext**)의 길이가 동일하다면 **커서 top 위치**를 **tagHeight** 만큼 하단으로, **커서 left 위치**는 `0`으로 초기화 합니다.     
   
   **다음 페이지 이동**    
-  `Enter`를 눌렀을 때 현재 페이지 문장(**sentenceArr**)과 사용자가 입력한 문장(**currentTextArr**) 개수가 동일하다면 **커서 top 위치**를 `0`으로 초기화 합니다.
+  `Enter`를 눌렀을 때 현재 페이지에서 생성된 문장(**sentenceArr**)과 사용자가 입력한 문장(**currentTextArr**) 개수가 동일하다면 **커서 top 위치**를 `0`으로, **커서 left 위치**는 `0`으로 초기화 합니다.
+
+  `isFull = false;`는 `onComposition` 이벤트에서 필요한 코드입니다. 줄 바꿈이 되었을 때 **isFull** 변수를 **false**로 초기화 합니다.
 
   ```javascript
   // switch case 'Backspace'
       case 'Backspace': {
+        isFull = false;
         // 커서 이전 이동
         const txt = e.target.value;
         // 현재 문자 인덱스
@@ -705,10 +723,12 @@
       }
   ```      
   **문자 삭제**   
-  `Backspace`를 눌렀을 때 현재 입력된 마지막 문자 너비(**tagWidth**) 만큼 **커서** 좌측으로 이동시킵니다. 만약 문자 인덱스가 `0` 미만이면 **커서 left 위치**를 `0`으로 초기화 합니다. 삭제할 문자가 없는 경우 **커서 left 위치**는 `0`으로 할당됩니다.   
+  `Backspace`를 눌렀을 때 현재 입력된 마지막 문자 너비(**tagWidth**) 만큼 **커서** 좌측으로 이동시킵니다. 만약 문자 인덱스가 `0` 미만이면 삭제할 문자가 없는 경우이기 때문에 **커서 left 위치**를 `0`으로 초기화 합니다. 
 
   선택한 태그(**selectedTag**)는 커서가 뒤로 가야 할 너비의 태그여야 합니다. 
-  > **Enter**, **default**의 **selectedTag** 변수 선언과 다름으로 유의해야 합니다. 
+  > **Enter**, **default** 부분과 **selectedTag** 변수 선언 코드가 다름으로 유의해야 합니다. 
+
+  `isFull = false;`는 `onComposition` 이벤트에서 필요한 코드입니다. 문자를 삭제했을 때 **isFull** 변수를 **false**로 초기화 합니다.
 
   ```javascript
   // switch case default
@@ -719,12 +739,7 @@
         // 현재 문자 인덱스
         const typingtextIdx = txt.length - 1;
         // 작성 문자 길이 제한
-        if (currentTextArr[typingSentenceNum].length <= txt.length) {
-          setTypingText(
-            txt.slice(0, currentTextArr[typingSentenceNum].length - 1)
-          );
-          return;
-        }
+        if (generatedSentence.length < txt.length + 1) return;
         // 태그 선택
         const liTags = document.getElementsByTagName('li');
         const selectedTag = 
@@ -737,42 +752,82 @@
   }}
   ```
   **영문 숫자 입력**    
-  영문, 숫자, 특수문자는 **e.key.length**가 한 자리수로, 해당 문자를 입력했을 때 **default**문을 수행합니다. 입력한 문자열 길이(**typingtext**)가 기존 문자열 길이(**currentTextArr[typingSentenceNum]**) 이상일 때 필요 길이 이상으로 작성하는 것을 제한합니다.     
+  영문, 숫자, 특수문자는 **e.key.length**가 한 자리수로, 해당 문자를 입력했을 때 **default**문을 수행합니다. 입력한 문자열 길이(**typingtext**)가 생성된 문장의 길이(**generatedSentence**) 이상일 때 필요 길이 이상으로 **커서**가 움직이는 것을 방지합니다.     
 
-  기존 문자열보다 입력한 문자열 길이가 작을 때 **커서**는 입력한 문자 너비(**tagWidth**) 만큼 우측으로 움직입니다. 기존 문자열 길이 이상일 경우 현재 입력하고 있는 문자(**typingtext**)는 `기존 문자열-1`의 크기로 할당됩니다. 
-  > 새로 입력한 문자도 추가되기 때문에 -1의 길이로 설정해야 기존 문자열의 길이를 초과하지 않습니다.
+  생성된 문장보다 입력한 문장 길이가 작을 때 **커서**는 입력한 문자 너비(**tagWidth**) 만큼 우측으로 움직입니다.  
   
-  영문, 숫자, 특수문자를 입력한 경우만 **default** 구문이 동작합니다. 
+  *영문, 숫자, 특수문자를 입력한 경우만 **default** 구문이 동작합니다.*
 
 - **\<input onCompositionStart={} />**    
-  **onCompositionStart**는 조합형 입력 시작을 감지합니다. **onCompositionStart** 이벤트는 **onKeyDown** 이벤트와 유사한 코드를 가지고 있어 동일한 결과값을 도출합니다.         
-  > **onComposition** 상태 세분화 : **onCompositionStart**, **onCompositionUpdate**, **onCompositionEnd**    
+  `onCompositionStart` 이벤트는 조합형 입력 시작을 감지합니다. 
 
   ```javascript
   // textInput.jsx <input onCompositionStart={} />
   onCompositionStart={(e) => {
-    const txt = e.target.value; // 비어있음
+    const txt = e.target.value; // 첫 입력 비어있음
+    const generatedSentence = currentTextArr[typingSentenceNum];
     // 현재 문자 인덱스
     const typingtextIdx = txt.length; // 기본 0
     // 작성 문자 길이 제한
-    if (currentTextArr[typingSentenceNum].length < txt.length + 1) {
-      setTypingText(
-        txt.slice(0, 
-          currentTextArr[typingSentenceNum].length - 1));
-      return;
-    }
+    if (generatedSentence.length < txt.length + 1) return (isFull = true);
+     if (isFull || typingtextIdx < 0) return;
     // 태그 선택
     const liTags = document.getElementsByTagName('li');
     const selectedTag = 
       liTags[typingSentenceNum].children[typingtextIdx];
-    if (typingtextIdx < 0) return;
     // 태그 크기
     const tagWidth = selectedTag.offsetWidth;
     dispatch({ type: 'CURSORMOVE', event: 'Typing', tagWidth });
   }}
   ```
   **조합형 문자 입력**   
-  감지된 문자는 항상 빈 문자로 시작됩니다. **onKeyDown** 이벤트와 인덱스 변수 초기 선언 값이 다릅니다.   
+  감지된 문자는 항상 빈 문자로 시작됩니다. **onKeyDown** 이벤트와 인덱스 변수 초기 선언 값이 다릅니다. 조합형 문장(**txt**)이 생성된 문장(**generatedSentence**)보다 길면 **isFull**을 **true**로 할당합니다. **isFull**은 `onComposition` 관련 이벤트 동작을 제한하는 역할을 합니다.   
+
+  `txt.length + 1`은 **txt**가 빈 문자열로 시작하기 때문에 `1`을 더하여 이전에 **isFull** 변수가 **true**로 반환되지 않도록 합니다.
+
+- **\<input onCompositionUpdate={} />**    
+
+  ```javascript
+  // textInput.jsx <input onCompositionUpdate={} />
+  onCompositionUpdate={(e) => {
+    const txt = e.target.value;
+    composedText = txt;
+  }}
+  ```
+  **조합형 문자 입력 업데이트**   
+  조합형 문자 입력 중을 감지합니다. 문자를 이어서 작성할 때 `onCompositionUpdate`가 동작합니다. 입력한 문자를 **composedText** 변수에 할당합니다.
+
+  **composedText** 변수는 항상 한 글자 이상을 가지고 있습니다.
+  
+- **\<input onCompositionEnd={} />**    
+
+  ```javascript
+  // textInput.jsx <input onCompositionEnd={} />
+  onCompositionEnd={(e) => {
+    const txtLength = isFull ? typingtext.length : e.target.value.length;
+    // 작성 문자 길이 제한
+    if (0 > txtLength) return;
+    // 이전 문자가 현재 문자 길이보다 클 때
+    if (composedText.length > txtLength) {
+      // 현재 문자 인덱스
+      const typingtextIdx = txtLength;
+      // 태그 선택
+      const liTags = document.getElementsByTagName('li');
+      const selectedTag = liTags[typingSentenceNum].children[typingtextIdx];
+      // 태그 크기
+      const tagWidth = selectedTag.offsetWidth;
+      dispatch({ type: 'CURSORMOVE', event: 'Backspace', tagWidth });
+      isFull = false;
+    }
+    composedText = '';
+  }}
+  ```
+  **조합형 문자 입력 끝**   
+  조합형 문자 입력 끝을 감지합니다. 문자가 완성되었을 때 `onCompositionEnd`가 동작합니다. 입력한 문장이 **isFull**이면 문장 최대 길이로 고정하고 아니면 입력한 문장 길이를 **txtLength** 변수에 할당합니다. **composedText**는 항상 문자를 가지고 있습니다. 먼저 입력된 문장(**composedText**) 길이가 수정한 문장 길이(**txtLength**)보다 작으면 **커서**를 뒤로 이동시킵니다.    
+
+  `if (0 > txtLength) return;` 코드는 조합형 첫번째 문자 삭제 예외상황을 처리합니다. `0`을 포함해야 조합형 문자 첫글자를 지우고 **커서**를 이동시킬 수 있습니다. `0`을 포함하지 않는다면 **커서**는 앞으로 한칸 움직인 상태에서 뒤로 한칸 움직이지 않습니다. `onCompositionEnd`가 끝난 이후 **backspace**를 누르면 `onKeyDown`이 적용됩니다.
+  
+  `onCompositionEnd`은 단독으로 동작할 수 없습니다. `onCompositionStart`가 동작해야 발생합니다. `onCompositionStart`는 조립형 문자를 입력할 때만 동작합니다.
 
 ### 2.3. 결과화면
 ---
@@ -915,12 +970,7 @@
     ...
     return (
       <input
-        id="textInput"
-        type="text"
-        name="textInput"
-        value={typingtext}
-        autoFocus
-        onChange={(e) => setTypingText(e.target.value)}
+        ...
         onKeyUp={(e) => {
           switch (e.key) {
             case 'Enter': {
@@ -933,13 +983,7 @@
                 setTypingText('');
                 ...
                 break;
-              } else if (
-                currentTextArr.length > typingtext.length ||
-                currentTextArr.length < typingtext.length
-              ) {
-                alert('문장 전체를 입력해주세요');
-                break;
-              }
+              } ...
             }
           }
         }}

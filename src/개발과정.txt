@@ -170,14 +170,14 @@
 
 24.10.18.
 		-	커서위치 표시 구현
-				onKeyDown 이벤트 따라 x,y축 이동,
+				onKeyUp 이벤트 따라 x,y축 이동,
 				이동거리 문자 태그의 offsetWidth 활용,
 				reducer/context 활용,
 				css 변수 활용,
 			영어 입력
-				onKeyDown: 1글자 key 이벤트면 커서 이동, 한글 입력 시 onKeyDown 동작 방지
+				onKeyUp: 1글자 key 이벤트면 커서 이동, 한글 입력 시 onKeyUp 동작 방지
 			한글 입력
-				문제: onKeyDown 이벤트 발생하면 커서가 입력 이벤트 발생 수 만큼 위치, 영어와 한글 입력 다름
+				문제: onKeyUp 이벤트 발생하면 커서가 입력 이벤트 발생 수 만큼 위치, 영어와 한글 입력 다름
 				해결: onCompositionStart() 사용, 입력 시작되면 커서 옮김, 다음 문자로 넘어갈 때까지 작동 X
 								ㄴ문제: 태그에 className 있지만 가져올 수 없음
 									해결: MutationObserver() 생성자 사용하여 태그 속성값 추적 후 변환값 반환
@@ -197,7 +197,7 @@
 		커서표시
 			생성된 문자 태그 만큼의 크기를 이동, 태그의 크기 offsetWidth 활용
 		onKeyDown
-			연속 문자 입력 처리하기 위해 onKeyDown에서 onKeyUp으로 변경
+			onChange 연속 입력과 커서 이동 동일 처리하기 위해 onKeyUp에서 onKeyDown으로 변경
 			영문 입력 시 커서 이동 적용, 그외 언어 문자는 process로 return 적용
 		onComposition
 			영문 글자 외 인코딩이 필요한 문자를 처리하는 이벤트다
@@ -206,4 +206,21 @@
 			onCompositionUpdate: 입력 문자 추적, 현재 입력한 글자 이전 문자 출력
 			onCompositionEnd: 입력 끝날 때 동작,   
 
-<--- 한문 입력 동안 backspace 커서 동작 오류 수정: mutations 변환 활용, 개발 문서 커서 기능 수정 --->
+24.10.21.
+	- 커서 동작 오류 수정
+		backspace 커서 동작 오류
+			ㄴ 문제: selectedTag 추적과 backspace 이벤트 중복 실행
+				해결: onCompositionUpdate 문자열 길이와, onCompositionEnd 문자열 길이 비교하여 End 문자열이 작다면 문자삭제
+		한글 연속 입력 시 입력 길이 제한 오류
+			ㄴ 문제: onCompositionStart() 입력길이 변경됨, 최대 4글자 일 때 최대 작성 이후 문자열 길이 3으로 변경됨
+				해결: flag 변수로 isFull 설정, 꽉 차면 true, 지워지면 isFull false 할당
+		한글 줄 바꿈 시 커서 위치 오류
+			ㄴ 문제: isFull은 문장을 전부 입력하면 true 할당됨
+			ㄴ 해결: 문장을 전부 입력하면 isFull은 true, 'Enter' 이벤트 발생 시 isFull 변수 false로 초기화, 
+	- 개발 문서 커서 기능 작성 수정
+	- 노래 불러오기 API
+		TOP100 불러오고 객체에 담기, 해당 음악ID 만큼 가사 불러오고 각 객체에 담기
+		ㄴ 문제: next dev에서 API 불러오지 않음, mode: no-cors; type: opaque;
+			 해결: express 서버 생성, 자체 api 설계 중
+
+<--- 자체 API 설계 및 구축 --->
