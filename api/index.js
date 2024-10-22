@@ -10,6 +10,7 @@ async function fetchData() {
   return data
 }
 
+// https://expressjs.com/ko/4x/api.html#express
 
 const express = require('express');
 const app = express();
@@ -18,6 +19,23 @@ const port = 3000;
 app.route('/')
   .get((req, res) => {
     res.send('This is music api');
+  })
+
+app.route('/musicLyric/:id')
+  .get(async (req, res) => {
+    const trackId = req.params.id;
+    const resp =
+      await fetch(`https://apis.naver.com/vibeWeb/musicapiweb/vibe/v4/lyric/${trackId}`,
+        {
+          method: 'GET',
+          headers: {
+            "accept": "application/json"
+          }
+        }
+      )
+    const data = await resp.json()
+    const text = await data.response.result.lyric.normalLyric.text;
+    res.send(text);
   })
 
 app.route('/musicList')

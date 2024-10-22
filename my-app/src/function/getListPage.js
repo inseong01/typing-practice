@@ -1,4 +1,4 @@
-export default function getListPage(list) {
+export default async function getListPage(list) {
   const page = [];
 
   let pageListWrap = [];

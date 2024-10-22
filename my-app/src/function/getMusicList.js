@@ -21,21 +21,21 @@
   ]
 */
 
-export default async function getMusicList() {
-  const res = await fetch('https://apis.naver.com/vibeWeb/musicapiweb/vibe/v1/chart/track/total?start=1&display=100', {
-    method: 'GET',
-    // mode: 'no-cors',
-    // headers:
-  });
-  console.log(res)
-  const data = res ? await res.json() : 'no data'
+const port = 3000;
 
+export default async function getMusicList() {
+  const res = await fetch(`/api/musicList`, {
+    method: 'GET',
+    headers: {
+      "accept": "application/json"
+    }
+  });
+  const data = await res.json();
   const musicList = [];
   const tracks = data.response.result.chart.items.tracks;
 
   for (let i = 0; i < tracks.length; i++) {
     const obj = {};
-
     obj["trackId"] = tracks[i].trackId;
     obj["trackTitle"] = tracks[i].trackTitle;
     obj["artists"] = tracks[i].artists;
@@ -44,7 +44,6 @@ export default async function getMusicList() {
     obj["currentRank"] = tracks[i].rank.currentRank;
     obj["lyric"] = tracks[i].lyric ? tracks[i].lyric : '';
     obj["isLyric"] = obj["lyric"] ? true : false;
-
     musicList.push(obj);
   }
 
@@ -54,11 +53,19 @@ export default async function getMusicList() {
 export async function getLyric(obj) {
   for (let i = 0; i < obj.length; i++) {
     const res =
-      await fetch(`https://apis.naver.com/vibeWeb/musicapiweb/vibe/v4/lyric/${obj[i].trackId}`)
-    const data = await res.json();
-    const text = data.response.result.lyric.nomarlLyric.text;
+      await fetch(`/api/musicLyric/${obj[i].trackId}`,
+        {
+          method: 'GET',
+          headers: {
+            "accept": "application/json"
+          }
+        }
+      );
+    const data = await res.json()
+    const text = await data.response.result.lyric.normalLyric.text;
+
     obj[i].lyric = text ? text : '가사 없음';
-    obj[i].isLyric = tracks ? true : false;
+    obj[i].isLyric = text ? true : false;
   }
   return obj;
 }

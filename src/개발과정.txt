@@ -223,4 +223,17 @@
 		ㄴ 문제: next dev에서 API 불러오지 않음, mode: no-cors; type: opaque;
 			 해결: express 서버 생성, 자체 api 설계 중
 
-<--- 자체 API 설계 및 구축 --->
+24.10.22.
+	- 노래 불러오기 API
+		Next 자체에서 cors 문제 발생, next.config.mjs 파일 rewrites() 설정으로 api 접근 해결
+		참고: https://nextjs.org/docs/app/api-reference/next-config-js/rewrites
+	- 로딩 UI 구현 
+		: 데이터 가공되는 단계에 맞춰 width 값 할당, Loading 컴포넌트 생성
+	- 가공된 API 데이터, DB 저장
+		1. 접속 
+			> DB 파일 불러오기(list 형식, page X) > 파일 보여줌 (v)
+		2. TOP100 갱신 
+			> API 데이터 가져옴 > 데이터 가공 > 파일 보여줌 (v)    
+	- firebase db 구축
+
+<--- API 갱신 조건, UI 설정 --->
