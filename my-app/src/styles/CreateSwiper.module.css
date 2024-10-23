@@ -15,6 +15,7 @@
 .main-title {
   font-size: 40px;
   cursor: default;
+  position: relative;
 }
 
 .btn-wrap {
@@ -31,4 +32,11 @@
 .btn {
   display: flex;
   cursor: pointer;
+}
+
+.updateBtn {
+  font-size: 1rem;
+  position: absolute;
+  bottom: 0;
+  right: -375px;
 }

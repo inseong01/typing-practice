@@ -235,5 +235,16 @@
 		2. TOP100 갱신 
 			> API 데이터 가져옴 > 데이터 가공 > 파일 보여줌 (v)    
 	- firebase db 구축
+		참고: https://firebase.google.com/docs/database/web/read-and-write?hl=ko&authuser=0
 
-<--- API 갱신 조건, UI 설정 --->
+24.10.23.
+	- "UPDATE" 조건
+		: 하루에 한 번만 클릭, DB에 업데이트 가능 시간 저장, 첫 마운트 때 클릭 가능 판단(now, db 비교)
+		- dayjs 사용
+			: js Date 객체 조작 복잡, 가장 가벼운 Date 라이브러리 사용
+			참고: https://day.js.org/docs/en/get-set/get#list-of-all-available-units
+			2024-10-23 11:00 클릭 -> 클릭시간, 2024-10-24 07:00 클릭 가능 시간 전송
+		커스텀 훅 useEffect type 의존성 변경되면 page 비우고 리렌더링
+	- Loading 컴포넌트, 로딩 유형에 맞춰 title 변경
+
+<--- updateBtn 디자인 --->
