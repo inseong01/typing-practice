@@ -1,17 +1,26 @@
+import { child, equalTo, get, orderByChild, query, ref, set, update } from "firebase/database";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 import getListPage from "@/function/getListPage";
 import musicList from '../../public/musicList.json';
-
-import { useState, useEffect } from "react";
-import { child, get, ref, set, update } from "firebase/database";
+import { firebaseConfig } from '../../firebaseConfig';
 import getMusicList, { getLyric } from "@/function/getMusicList";
+import { initializeApp } from 'firebase/app';
+import { getDatabase } from 'firebase/database';
+import splitLyric from "@/function/splitLyric";
+
+// Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
 // db 파일 가져오기
-export function readData(db, category, setLoadingPercent, setPage) {
+export async function readData(category, setLoadingPercent) {
   const dbRef = ref(db);
-  const a = get(child(dbRef, category))
+  const dbData = get(child(dbRef, category))
     .then((snapshot) => {
-      if (!snapshot.exists()) Promise.reject(new Error('No data'))
-      if (category === 'top100/musicList') {
+      if (!snapshot.exists()) throw new Error('No data');
+      if (setLoadingPercent) {
         setLoadingPercent(80)
         return new Promise((res) => setTimeout(() => res(snapshot.val()), 300));
       };
@@ -19,31 +28,42 @@ export function readData(db, category, setLoadingPercent, setPage) {
     })
     .then((data) => {
       const page = getListPage(data);
-      if (category === 'top100/musicList') {
+      if (setLoadingPercent) {
         setLoadingPercent(100)
         return new Promise((res) => setTimeout(() => res(page), 150));
       };
       return data;
     })
     .then((data) => {
-      if (setPage) setPage(data)
       return data;
     })
     .catch((error) => {
-      console.error(error);
+      throw new Error(error);
     });
-  return a;
+  return dbData;
+}
+
+// db 쿼리 파일 가져오기
+export async function queryReadData(category, value, key) {
+  try {
+    const queryData = query(ref(db, category), orderByChild(key), equalTo(value));
+    const snapshot = await get(queryData)
+    if (!snapshot.exists()) throw new Error('No queryData')
+    return snapshot.val()
+  } catch (error) {
+    return console.error(error);
+  }
 }
 
 // db 파일 덮어씌우기
-export function writeData(db, category, data) {
+export function writeData(category, data) {
   set(ref(db, category), {
     data,
   });
 }
 
 // db 파일 업데이트
-export function updateData(db, category, data) {
+export function updateData(category, data) {
   // db 업데이트 주체와 data는 객체 항목을 가지고 있어야 함
   const updates = {};
   for (let i = 0; i < Object.keys(data).length; i++) {
@@ -52,41 +72,93 @@ export function updateData(db, category, data) {
   return update(ref(db), updates);
 }
 
-export default function useFetchData(type, db) {
+export default function useFetchData(type, key) {
   const [loadingPercent, setLoadingPercent] = useState(0);
-  const [isClick, setIsClick] = useState(false);
   const [page, setPage] = useState([]);
+  const [pageSheet, setPageSheet] = useState({});
+  const [dataObj, setDataObj] = useState({})
+  const router = useRouter();
 
   useEffect(() => {
     // API 호출 + 데이터 가공
     setLoadingPercent(0);
-    let pageData = []
+    let pageData = [];
+    let error = '';
+
     async function fetchData() {
       await new Promise((res) => setTimeout(res, 300)); // 자연스러운 로딩 업데이트
-      if (type === 'LOAD') { // 첫 접근일 때
-        // 3단계
-        // readData(db, 'top100/musicList', setLoadingPercent, setPage); // db
-        pageData = await getListPage(musicList); // api, 목 데이터: musicList || API 데이터: musicArr
-        setPage(pageData)
-      } else if (type === 'UPDATE') { // 갱신 접근일 때
-        // 1단계
-        const top100 = await getMusicList();
-        setLoadingPercent(20);
-        await new Promise((res) => setTimeout(res, 300));
-        // 2단계
-        const musicArr = await getLyric(top100);
-        setLoadingPercent(80);
-        await new Promise((res) => setTimeout(res, 300));
-        // 3단계
-        pageData = await getListPage(musicArr); // api, 목 데이터: musicList || API 데이터: musicArr
-        setLoadingPercent(100);
-        await new Promise((res) => setTimeout(res, 300));
-        setPage(pageData)
-        setIsClick(false);
-      };
+      switch (type) {
+        case 'LOAD': { // 페이지 처음 접속할 때
+          try {
+            // 3단계
+            // pageData = await readData('top100/musicList', setLoadingPercent); // db
+            pageData = await getListPage(musicList); // mock
+            setPage(pageData);
+            break;
+          } catch {
+            // 저장된 목록 firebase에서 불러오기 오류, 사이트 오류 UI
+            setLoadingPercent(100);
+            await new Promise((res) => setTimeout(res, 300));
+            error = 'ReadData'
+            return router.replace(`/_error?m=${encodeURIComponent(error)}`);
+          }
+        }
+        case 'UPDATE': { // 목차 업데이트 할 때
+          try {
+            // 1단계
+            const top100 = await getMusicList();
+            setLoadingPercent(20);
+            await new Promise((res) => setTimeout(res, 300));
+            // 2단계
+            const musicArr = await getLyric(top100);
+            setLoadingPercent(80);
+            await new Promise((res) => setTimeout(res, 300));
+            // 3단계
+            pageData = await getListPage(musicArr); // api, 목 데이터: musicList || API 데이터: musicArr
+            setLoadingPercent(100);
+            await new Promise((res) => setTimeout(res, 300));
+            setPage(pageData)
+            break;
+          } catch {
+            // 음악 차트 API 호출 오류, 이전 page 반환
+            setLoadingPercent(100);
+            await new Promise((res) => setTimeout(res, 300));
+            return { page };
+          }
+        }
+        case 'ID': {
+          try {
+            const music = await musicList.find((item) => item.trackId === Number(trackId)); // mock
+            // const musicObj = await queryReadData('top100/musicList', Number(key), 'trackId'); // db
+            // const music = musicObj[Object.keys(musicObj)[0]]; // db
+            setLoadingPercent(80);
+            await new Promise((res) => setTimeout(res, 300));
+            const artistName = await music.artists
+              .map((value) => value.artistName)
+              .join()
+              .replace(',', ', ');
+            setLoadingPercent(100);
+            await new Promise((res) => setTimeout(res, 300));
+            const sheet = splitLyric(music);
+            const obj = {
+              music,
+              artistName
+            }
+            setDataObj(obj)
+            setPageSheet(sheet);
+            break;
+          } catch {
+            // 특정 음악 선택 firebase 오류, 오류 페이지로 이동
+            setLoadingPercent(100);
+            await new Promise((res) => setTimeout(res, 300));
+            error = 'QueryReadData'
+            return router.replace(`/_error?m=${encodeURIComponent(error)}`);
+          }
+        }
+      }
     }
     fetchData();
   }, [type]);
 
-  return { loadingPercent, page, isClick, setIsClick, setPage, setLoadingPercent }
+  return { loadingPercent, page, pageSheet, dataObj, setPage, setLoadingPercent }
 }

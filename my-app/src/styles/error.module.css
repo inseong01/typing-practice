@@ -1,0 +1,7 @@
+.nav {
+  display: inline-block;
+  color: #2666cd;
+  border-bottom: 1px solid #2666cd;
+  cursor: pointer;
+  margin-top: 20px;
+}

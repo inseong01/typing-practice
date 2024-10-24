@@ -39,4 +39,13 @@
   position: absolute;
   bottom: 0;
   right: -375px;
+  cursor: pointer;
+}
+.disable {
+  color: #800080;
+  border-bottom: 1px solid #800080;
+}
+.able {
+  color: #2666cd;
+  border-bottom: 1px solid #2666cd;
 }
