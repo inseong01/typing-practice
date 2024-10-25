@@ -1,14 +1,11 @@
 import Sentence from '@/components/sentence';
 import ResultPage from '@/components/resultPage';
-import musicList from '../../../public/musicList';
 import styles from '@/styles/[id].module.css';
-import splitLyric from '@/function/splitLyric';
 import { Context } from '../_app';
 import Loading from '@/components/loading';
 
 import { useContext, useEffect, useState } from 'react';
-import useFetchData, { queryReadData } from '@/hook/useFetchData';
-import { useRouter } from 'next/navigation';
+import useFetchData from '@/hook/useFetchData';
 
 export const getServerSideProps = async (data) => {
   const trackId = await data.query.id;
@@ -16,12 +13,10 @@ export const getServerSideProps = async (data) => {
 };
 
 export default function Page({ trackId, error }) {
-  const { dataObj, pageSheet, loadingPercent } = useFetchData('ID', trackId);
+  const { dataObj, pageSheet, loadingPercent } = useFetchData('ID', Number(trackId));
   const [pageSheetIdx, setPageSheetIdx] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
   const { dispatch, state } = useContext(Context);
-
-  console.log(dataObj, pageSheet, loadingPercent);
 
   useEffect(() => {
     dispatch({ type: 'RESET' });
@@ -36,12 +31,14 @@ export default function Page({ trackId, error }) {
   switch (isFinished) {
     case true: {
       return (
-        <ResultPage
-          setIsFinished={setIsFinished}
-          setPageSheetIdx={setPageSheetIdx}
-          music={dataObj.music}
-          artistName={dataObj.artistName}
-        />
+        <>
+          <ResultPage
+            setIsFinished={setIsFinished}
+            setPageSheetIdx={setPageSheetIdx}
+            music={dataObj.music}
+            artistName={dataObj.artistName}
+          />
+        </>
       );
     }
     case false: {
@@ -51,7 +48,7 @@ export default function Page({ trackId, error }) {
             <Loading loadingPercent={loadingPercent} type={'LOAD'} />
           ) : pageSheetIdx === 0 ? (
             <div className={styles['id-main']}>
-              <h1 className={styles.title}>{dataObj.music.trackTitle}</h1>
+              <h1 className={styles.title}>{dataObj.music.trackTitle.replace(/\(.*/g, '')}</h1>
               <p className={styles.artist}>{dataObj.artistName}</p>
               <Sentence
                 key={pageSheetIdx}

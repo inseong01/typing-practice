@@ -45,7 +45,7 @@ export default function TextInput({
         const liTags = document.getElementsByTagName('li');
         const selectedTag = liTags[typingSentenceNum].children[typingtextIdx];
         // 태그 크기
-        const tagWidth = selectedTag.offsetWidth;
+        const tagWidth = Number(selectedTag.getBoundingClientRect().width.toFixed(2));
         dispatch({ type: 'CURSORMOVE', event: 'Typing', tagWidth });
       }}
       onCompositionUpdate={(e) => {
@@ -65,7 +65,7 @@ export default function TextInput({
           const liTags = document.getElementsByTagName('li');
           const selectedTag = liTags[typingSentenceNum].children[typingtextIdx];
           // 태그 크기
-          const tagWidth = selectedTag.offsetWidth;
+          const tagWidth = Number(selectedTag.getBoundingClientRect().width.toFixed(2));
           dispatch({ type: 'CURSORMOVE', event: 'Backspace', tagWidth });
           isFull = false;
         }
@@ -89,8 +89,11 @@ export default function TextInput({
                 dispatch({ type: 'CURSORMOVE', event: 'Enter', tagTop: 0 });
                 break;
               }
-              // 커서 아래 이동
-              const tagHeight = 25.5;
+              // 태그 선택
+              const liTags = document.getElementsByTagName('li');
+              const selectedTag = liTags[typingSentenceNum + 1];
+              // 태그 크기
+              const tagHeight = Number(selectedTag.getBoundingClientRect().height.toFixed(2));
               dispatch({ type: 'CURSORMOVE', event: 'Enter', tagHeight });
 
               break;
@@ -116,8 +119,7 @@ export default function TextInput({
             const liTags = document.getElementsByTagName('li');
             const selectedTag = liTags[typingSentenceNum].children[typingtextIdx];
             // 태그 크기
-            const tagWidth = selectedTag?.offsetWidth;
-            if (!tagWidth) return;
+            const tagWidth = Number(selectedTag.getBoundingClientRect().width.toFixed(2));
             dispatch({ type: 'CURSORMOVE', event: 'Backspace', tagWidth });
             break;
           }
@@ -133,7 +135,8 @@ export default function TextInput({
             const liTags = document.getElementsByTagName('li');
             const selectedTag = liTags[typingSentenceNum].children[typingtextIdx + 1];
             // 태그 크기
-            const tagWidth = selectedTag.offsetWidth;
+            // const tagWidth = selectedTag.offsetWidth;
+            const tagWidth = Number(selectedTag.getBoundingClientRect().width.toFixed(2));
             dispatch({ type: 'CURSORMOVE', event: 'Typing', tagWidth });
           }
         }

@@ -1,7 +1,9 @@
-.nav {
-  display: inline-block;
-  color: #2666cd;
-  border-bottom: 1px solid #2666cd;
-  cursor: pointer;
-  margin-top: 20px;
+.code {
+  font-size: 2rem;
+  letter-spacing: 0.5rem;
+  margin-bottom: 0;
+}
+.title {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
 }

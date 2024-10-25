@@ -1,6 +1,8 @@
 import '@/styles/globals.css';
 import '@/styles/variables.css';
-import { createContext, useReducer } from 'react';
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+import { createContext, useEffect, useReducer } from 'react';
 
 export const Context = createContext(null);
 
@@ -105,14 +107,17 @@ export default function App({ Component, pageProps }) {
   const [state, dispatch] = useReducer(reducer, initialArg);
   return (
     <>
+      <Head>
+        <title>Typing-practice</title>
+      </Head>
       <div className="wrap">
         <main className="main">
           <div className="framebox t">
             <div className="frame">
-              <img src="./img/(left)point.png" />
+              <img src="/img/(left)point.png" />
             </div>
             <div className="frame">
-              <img src="./img/(right)point.png" />
+              <img src="/img/(right)point.png" />
             </div>
           </div>
           <div className="content">
@@ -122,10 +127,10 @@ export default function App({ Component, pageProps }) {
           </div>
           <div className="framebox b">
             <div className="frame">
-              <img src="./img/(left)btm-point.png" />
+              <img src="/img/(left)btm-point.png" />
             </div>
             <div className="frame">
-              <img src="./img/(right)btm-point.png" />
+              <img src="/img/(right)btm-point.png" />
             </div>
           </div>
         </main>

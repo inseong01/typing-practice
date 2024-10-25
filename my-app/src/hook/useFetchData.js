@@ -74,32 +74,36 @@ export function updateData(category, data) {
 
 export default function useFetchData(type, key) {
   const [loadingPercent, setLoadingPercent] = useState(0);
-  const [page, setPage] = useState([]);
   const [pageSheet, setPageSheet] = useState({});
-  const [dataObj, setDataObj] = useState({})
+  const [dataObj, setDataObj] = useState({});
+  const [page, setPage] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
     // API 호출 + 데이터 가공
-    setLoadingPercent(0);
+    const modal = document.getElementById('modal');
     let pageData = [];
     let error = '';
 
     async function fetchData() {
+      setLoadingPercent(0); // 로딩바 초기화
       await new Promise((res) => setTimeout(res, 300)); // 자연스러운 로딩 업데이트
       switch (type) {
         case 'LOAD': { // 페이지 처음 접속할 때
           try {
             // 3단계
-            // pageData = await readData('top100/musicList', setLoadingPercent); // db
-            pageData = await getListPage(musicList); // mock
+            pageData = await readData('top100/musicList', setLoadingPercent); // db
+            // pageData = await getListPage(musicList); // mock
+            setLoadingPercent(100);
+            await new Promise((res) => setTimeout(res, 300));
             setPage(pageData);
+            await new Promise((res) => setTimeout(res, 300));
             break;
           } catch {
             // 저장된 목록 firebase에서 불러오기 오류, 사이트 오류 UI
             setLoadingPercent(100);
             await new Promise((res) => setTimeout(res, 300));
-            error = 'ReadData'
+            error = 'ReadData';
             return router.replace(`/_error?m=${encodeURIComponent(error)}`);
           }
         }
@@ -117,20 +121,18 @@ export default function useFetchData(type, key) {
             pageData = await getListPage(musicArr); // api, 목 데이터: musicList || API 데이터: musicArr
             setLoadingPercent(100);
             await new Promise((res) => setTimeout(res, 300));
-            setPage(pageData)
-            break;
-          } catch {
-            // 음악 차트 API 호출 오류, 이전 page 반환
-            setLoadingPercent(100);
-            await new Promise((res) => setTimeout(res, 300));
-            return { page };
+            setPage(pageData);
+            return;
+          } catch (e) {
+            // 에러 발생하면 반환, 모달창 켜진 상태 setLoadingPercent만 다름
+            return;
           }
         }
         case 'ID': {
           try {
-            const music = await musicList.find((item) => item.trackId === Number(trackId)); // mock
-            // const musicObj = await queryReadData('top100/musicList', Number(key), 'trackId'); // db
-            // const music = musicObj[Object.keys(musicObj)[0]]; // db
+            // const music = await musicList.find((item) => item.trackId === key); // mock
+            const musicObj = await queryReadData('top100/musicList', key, 'trackId'); // db
+            const music = musicObj[Object.keys(musicObj)[0]]; // db
             setLoadingPercent(80);
             await new Promise((res) => setTimeout(res, 300));
             const artistName = await music.artists
