@@ -1,6 +1,11 @@
+import { memo, useEffect } from 'react';
 import Letter from './letter';
 
-export default function Lyric_li({ ly, typingtext, typingSentenceNum, lyricSentenceNum, sentenceArr }) {
+function Lyric_li({ ly, typingtext, typingSentenceNum, lyricSentenceNum, sentenceArr }) {
+  // 입력된 문장 모음과 이전 문장들 비교
+  // useEffect(() => {
+  //   console.log('Letter redering');
+  // });
   return (
     <li data-testid="li">
       {ly.map((txt, idx) => {
@@ -20,3 +25,5 @@ export default function Lyric_li({ ly, typingtext, typingSentenceNum, lyricSente
     </li>
   );
 }
+
+export default memo(Lyric_li);

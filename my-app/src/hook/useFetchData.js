@@ -81,7 +81,6 @@ export default function useFetchData(type, key) {
 
   useEffect(() => {
     // API 호출 + 데이터 가공
-    const modal = document.getElementById('modal');
     let pageData = [];
     let error = '';
 
@@ -91,9 +90,13 @@ export default function useFetchData(type, key) {
       switch (type) {
         case 'LOAD': { // 페이지 처음 접속할 때
           try {
+            // 페이지 벗어나지 않았다면 sessionStorage에서 불러옴
+            const sessionData = sessionStorage.getItem('pageData');
             // 3단계
-            pageData = await readData('top100/musicList', setLoadingPercent); // db
+            pageData = sessionData ? JSON.parse(sessionData) : await readData('top100/musicList', setLoadingPercent); // db
             // pageData = await getListPage(musicList); // mock
+            // 불러온 pageData, sessionStorage 저장
+            sessionStorage.setItem('pageData', JSON.stringify(pageData));
             setLoadingPercent(100);
             await new Promise((res) => setTimeout(res, 300));
             setPage(pageData);
@@ -119,12 +122,16 @@ export default function useFetchData(type, key) {
             await new Promise((res) => setTimeout(res, 300));
             // 3단계
             pageData = await getListPage(musicArr); // api, 목 데이터: musicList || API 데이터: musicArr
+            // sessionStorage 덮어씌우기
+            sessionStorage.setItem('pageData', JSON.stringify(pageData));
+            // db 덮어씌우기
+            writeData('top100/musicList', pageData);
             setLoadingPercent(100);
             await new Promise((res) => setTimeout(res, 300));
             setPage(pageData);
             return;
           } catch (e) {
-            // 에러 발생하면 반환, 모달창 켜진 상태 setLoadingPercent만 다름
+            // 에러 발생하면 모달창 켜진 상태 반환, 로딩바 퍼센트만 다름
             return;
           }
         }

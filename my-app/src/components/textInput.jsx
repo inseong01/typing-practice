@@ -4,6 +4,7 @@ import { useContext, useState } from 'react';
 
 let isFull = false;
 let composedText = '';
+let isBlur = false;
 
 export default function TextInput({
   typingtext,
@@ -15,7 +16,6 @@ export default function TextInput({
   setTypingSentenceNum,
 }) {
   const { dispatch, state } = useContext(Context);
-
   return (
     <input
       autoFocus
@@ -25,7 +25,15 @@ export default function TextInput({
       value={typingtext}
       className={styles.textInput}
       data-testid="textInput"
-      onClick={() => console.log('input text click')}
+      onClick={(e) => {
+        console.log('input text click');
+      }}
+      onFocus={() => {
+        console.log('in');
+      }}
+      onBlur={() => {
+        console.log('out');
+      }}
       onChange={(e) => {
         const txt = e.target.value;
         const generatedSentence = currentTextArr[typingSentenceNum];
@@ -53,6 +61,7 @@ export default function TextInput({
         composedText = txt;
       }}
       onCompositionEnd={(e) => {
+        console.log('end', composedText.length, e.target.value.length);
         // input value가 isFull이면 최대 길이로 고정
         const txtLength = isFull ? typingtext.length : e.target.value.length;
         // 작성 문자 길이 제한

@@ -2,17 +2,27 @@ import styles from '@/styles/sentence.module.css';
 import TextInput from './textInput';
 import Lyric_li from './lyric_li';
 
-import { useContext, useEffect, useState } from 'react';
+import { memo, useContext, useEffect, useState } from 'react';
 import { Context } from '@/pages/_app';
 
 let start = null;
 let isFirstTime = true;
 let totalSentenceObj = {};
 
+function detectLanguage(char = '') {
+  const code = char.charCodeAt(0);
+  if ((code >= 0x0041 && code <= 0x005a) || (code >= 0x0061 && code <= 0x007a)) {
+    return 'English';
+  } else {
+    return '';
+  }
+}
+
 function Sentence({ pageSheet, pageSheetIdx, setIsFinished, onEnterNextPage }) {
   const [typingtext, setTypingText] = useState('');
   const [typingSentenceNum, setTypingSentenceNum] = useState(0);
   const [sentenceArr, setSentenceArr] = useState([]);
+  const [currentLang, setCurrentLang] = useState('');
   const { dispatch, state } = useContext(Context);
 
   useEffect(() => {
@@ -44,6 +54,19 @@ function Sentence({ pageSheet, pageSheetIdx, setIsFinished, onEnterNextPage }) {
     isFirstTime = false;
   }, [typingtext]);
 
+  useEffect(() => {
+    if (!typingtext) return;
+    // 방금 작성한 문자 언어 검사
+    const lastChar = typingtext[typingtext.length - 1];
+    const lang = detectLanguage(lastChar);
+    setCurrentLang(lang === 'English' ? '영문' : '');
+  }, [typingtext]);
+
+  const handleClick = (e) => {
+    console.log('label');
+    document.getElementById('textInput').focus(); // input에 포커스 강제 설정
+  };
+
   return (
     <>
       <ul className={styles.lyric} data-testid="lyric">
@@ -61,7 +84,8 @@ function Sentence({ pageSheet, pageSheetIdx, setIsFinished, onEnterNextPage }) {
         })}
         <li data-testid="cursor" className={styles.cursor}></li>
       </ul>
-      <label data-testid="label" htmlFor="textInput" className={styles.labelTextInput}>
+      <label data-testid="label" htmlFor="textInput" className={styles.labelTextInput} onClick={handleClick}>
+        <div className={styles.lang}>{currentLang.length !== 0 && currentLang}</div>
         <TextInput
           typingtext={typingtext}
           sentenceArr={sentenceArr}
@@ -76,4 +100,4 @@ function Sentence({ pageSheet, pageSheetIdx, setIsFinished, onEnterNextPage }) {
   );
 }
 
-export default Sentence;
+export default memo(Sentence);

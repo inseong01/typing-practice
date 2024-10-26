@@ -27,3 +27,9 @@
   top: var(--cursor-top);
   left: var(--cursor-left);
 }
+
+.lang {
+  position: absolute;
+  top: 0;
+  left: 0;
+}

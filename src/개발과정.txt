@@ -273,4 +273,12 @@
 	- 커서 이동 오류 수정
 		: offsetWidth -> getBoundingClientRect() 사용
 	
-	<--- API 요청 최소화, 문서작성 --->
+24.10.26.
+	- API 요청 최소화
+	 : sessionStorage 사용, 'LOAD', 'UPDATE' 때 API 데이터 보관
+	- 한영 구분 기능 추가
+	 : 영문 입력 시 영어 표시
+	- 타이핑 최적화
+	 : <letter /> memo 사용
+
+<--- 타이핑 최적화, 한글 입력 중 blur 발생 시 글자 사라짐  --->
