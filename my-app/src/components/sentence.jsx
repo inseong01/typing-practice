@@ -9,12 +9,15 @@ let start = null;
 let isFirstTime = true;
 let totalSentenceObj = {};
 
-function detectLanguage(char = '') {
+function detectLanguage(char = '', current) {
   const code = char.charCodeAt(0);
+  const ko = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/g.test(char);
   if ((code >= 0x0041 && code <= 0x005a) || (code >= 0x0061 && code <= 0x007a)) {
-    return 'English';
+    return '영';
+  } else if (ko) {
+    return '한';
   } else {
-    return '';
+    return current;
   }
 }
 
@@ -32,13 +35,9 @@ function Sentence({ pageSheet, pageSheetIdx, setIsFinished, onEnterNextPage }) {
       totalSentenceObj[pageSheetIdx] = sentenceArr;
       setSentenceArr([]);
       onEnterNextPage();
-    }
 
-    // 모든 페이지 작성 완료했을 때
-    if (
-      sentenceArr.length === pageSheet[pageSheetIdx].length &&
-      Object.keys(pageSheet).length === pageSheetIdx + 1
-    ) {
+      if (Object.keys(pageSheet).length !== pageSheetIdx + 1) return;
+      // 모든 페이지 작성 완료했을 때
       setIsFinished(true);
       const end = Date.now();
       dispatch({ type: 'CALCULATE', start, end, totalSentenceObj, pageSheet });
@@ -58,14 +57,9 @@ function Sentence({ pageSheet, pageSheetIdx, setIsFinished, onEnterNextPage }) {
     if (!typingtext) return;
     // 방금 작성한 문자 언어 검사
     const lastChar = typingtext[typingtext.length - 1];
-    const lang = detectLanguage(lastChar);
-    setCurrentLang(lang === 'English' ? '영문' : '');
+    const lang = detectLanguage(lastChar, currentLang);
+    setCurrentLang(lang);
   }, [typingtext]);
-
-  const handleClick = (e) => {
-    console.log('label');
-    document.getElementById('textInput').focus(); // input에 포커스 강제 설정
-  };
 
   return (
     <>
@@ -84,18 +78,18 @@ function Sentence({ pageSheet, pageSheetIdx, setIsFinished, onEnterNextPage }) {
         })}
         <li data-testid="cursor" className={styles.cursor}></li>
       </ul>
-      <label data-testid="label" htmlFor="textInput" className={styles.labelTextInput} onClick={handleClick}>
+      <label data-testid="label" htmlFor="textInput" className={styles.labelTextInput}>
         <div className={styles.lang}>{currentLang.length !== 0 && currentLang}</div>
-        <TextInput
-          typingtext={typingtext}
-          sentenceArr={sentenceArr}
-          setTypingText={setTypingText}
-          setSentenceArr={setSentenceArr}
-          currentTextArr={pageSheet[pageSheetIdx]}
-          typingSentenceNum={typingSentenceNum}
-          setTypingSentenceNum={setTypingSentenceNum}
-        />
       </label>
+      <TextInput
+        typingtext={typingtext}
+        sentenceArr={sentenceArr}
+        setTypingText={setTypingText}
+        setSentenceArr={setSentenceArr}
+        currentTextArr={pageSheet[pageSheetIdx]}
+        typingSentenceNum={typingSentenceNum}
+        setTypingSentenceNum={setTypingSentenceNum}
+      />
     </>
   );
 }

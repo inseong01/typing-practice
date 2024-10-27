@@ -2,7 +2,6 @@ import { memo, useEffect } from 'react';
 import Letter from './letter';
 
 function Lyric_li({ ly, typingtext, typingSentenceNum, lyricSentenceNum, sentenceArr }) {
-  // 입력된 문장 모음과 이전 문장들 비교
   // useEffect(() => {
   //   console.log('Letter redering');
   // });
