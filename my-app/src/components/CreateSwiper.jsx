@@ -21,7 +21,7 @@ export default function CreateSwiper() {
   const [type, setType] = useState('LOAD');
   const [pageNumber, setPageNumber] = useState(0);
   const [isClickAble, setIsClickAlble] = useState(false);
-  const { loadingPercent, page, setPage } = useFetchData(type);
+  const { loadingPercent, page } = useFetchData(type);
   const [isError, setIsError] = useState(false);
 
   useEffect(() => {
@@ -92,6 +92,7 @@ export default function CreateSwiper() {
       <div className={styles['main-title']}>
         목차
         <div
+          data-testid="btn_update"
           className={styles.updateBtn}
           onClick={onClickUpdateHandler}
           title={isClickAble ? '현재 업데이트 가능' : `${restTimeToUpdateHour}시간 후에 업데이트 가능`}

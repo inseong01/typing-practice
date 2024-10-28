@@ -1,8 +1,7 @@
 import '@/styles/globals.css';
 import '@/styles/variables.css';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
-import { createContext, useEffect, useReducer } from 'react';
+import { createContext, useReducer } from 'react';
 
 export const Context = createContext(null);
 
@@ -15,29 +14,37 @@ const initialArg = {
     left: 0,
   },
 };
+
 export function reducer(state, action) {
   switch (action.type) {
     case 'CALCULATE': {
       const { start, end, totalSentenceObj, pageSheet } = action;
-      const time = ((end - start) / 1000).toFixed(1);
+      const totalPageCount = Object.keys(pageSheet).length;
+      const pageSentenceLength = totalSentenceObj[i].length;
+      const sentenceLength = totalSentenceObj[i][j].length;
 
       let wrongTextCount = 0;
-      let totalTextLength = 0;
-      for (let i = 0; i < Object.keys(pageSheet).length; i++) {
-        for (let j = 0; j < totalSentenceObj[i].length; j++) {
-          for (let k = 0; k < totalSentenceObj[i][j].length; k++) {
-            totalTextLength += 1;
-            if (pageSheet[i][j][k] === totalSentenceObj[i][j][k]) continue;
+      let totalTextCount = 0;
+      for (let i = 0; i < totalPageCount; i++) {
+        for (let j = 0; j < pageSentenceLength; j++) {
+          for (let k = 0; k < sentenceLength; k++) {
+            const originalLetter = pageSheet[i][j][k];
+            const typedLetter = totalSentenceObj[i][j][k];
+            totalTextCount += 1;
+            if (originalLetter === typedLetter) continue;
             wrongTextCount += 1;
           }
         }
       }
-      const accuracy = Number((((totalTextLength - wrongTextCount) / totalTextLength) * 100).toFixed(1));
-      const typingSpeed = Number(((totalTextLength / time) * 60).toFixed(1));
+
+      const time = ((end - start) / 1000).toFixed(1);
+      const accuracy = Number((((totalTextCount - wrongTextCount) / totalTextCount) * 100).toFixed(1));
+      const typingSpeed = Number(((totalTextCount / time) * 60).toFixed(1));
+
       return {
         ...state,
-        accuracy,
         time,
+        accuracy,
         typingSpeed,
       };
     }
@@ -59,6 +66,7 @@ export function reducer(state, action) {
       const { tagWidth, tagHeight, tagLeft, tagTop } = action;
       let cursorTopValue = state.cursor.top;
       let cursorLeftValue = state.cursor.left;
+
       switch (action.event) {
         case 'Typing': {
           cursorLeftValue += tagWidth;

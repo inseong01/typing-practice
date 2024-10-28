@@ -1,13 +1,20 @@
 import getListPage from "../getListPage";
-import top100 from '../../../public/top100.json';
 import getMusicList from "../getMusicList";
+import top100 from '../../../public/top100.json';
+
+global.fetch = jest.fn().mockImplementation(() => Promise.resolve({ json: () => Promise.resolve(top100) }));
 
 describe('getListPage test : ', () => {
-  const list = getMusicList(top100);
-  const page = getListPage(list);
+  let list;
+  let page;
 
-  test('Max page number is 10 ', () => {
-    expect(page).toHaveLength(10);
+  beforeAll(async () => {
+    list = await getMusicList();
+    page = await getListPage(list);
+  })
+
+  test('Music page max number is 10 ', () => {
+    expect(Object.keys(page)).toHaveLength(10);
   })
   test('Each page has 10 music lists', () => {
     for (let i = 0; i < page.length; i++) {

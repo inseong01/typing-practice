@@ -20,19 +20,11 @@ export async function readData(category, setLoadingPercent) {
   const dbData = get(child(dbRef, category))
     .then((snapshot) => {
       if (!snapshot.exists()) throw new Error('No data');
-      if (setLoadingPercent) {
-        setLoadingPercent(80)
-        return new Promise((res) => setTimeout(() => res(snapshot.val()), 300));
+      if (category === 'top100/musicList') {
+        setLoadingPercent(80);
+        return new Promise((res) => setTimeout(() => res(snapshot.val()), 150));
       };
       return snapshot.val();
-    })
-    .then((data) => {
-      const page = getListPage(data);
-      if (setLoadingPercent) {
-        setLoadingPercent(100)
-        return new Promise((res) => setTimeout(() => res(page), 150));
-      };
-      return data;
     })
     .then((data) => {
       return data;
@@ -91,19 +83,24 @@ export default function useFetchData(type, key) {
         case 'LOAD': { // 페이지 처음 접속할 때
           try {
             // 페이지 벗어나지 않았다면 sessionStorage에서 불러옴
-            const sessionData = sessionStorage.getItem('pageData');
+            const getSessionData = sessionStorage.getItem('pageData');
+            const sessionData = !!getSessionData && JSON.parse(getSessionData);
             // 3단계
-            pageData = sessionData ? JSON.parse(sessionData) : await readData('top100/musicList', setLoadingPercent); // db
+            const getReadData = !getSessionData && await readData('top100/musicList', setLoadingPercent); // db
+            pageData = !!getSessionData ? await getListPage(sessionData) : await getListPage(getReadData);
             // pageData = await getListPage(musicList); // mock
+
             // 불러온 pageData, sessionStorage 저장
-            sessionStorage.setItem('pageData', JSON.stringify(pageData));
+            sessionStorage.setItem('pageData', JSON.stringify(!!getSessionData ? sessionData : getReadData));
+
             setLoadingPercent(100);
             await new Promise((res) => setTimeout(res, 300));
             setPage(pageData);
             await new Promise((res) => setTimeout(res, 300));
             break;
-          } catch {
+          } catch (e) {
             // 저장된 목록 firebase에서 불러오기 오류, 사이트 오류 UI
+            console.error(e)
             setLoadingPercent(100);
             await new Promise((res) => setTimeout(res, 300));
             error = 'ReadData';
@@ -123,9 +120,9 @@ export default function useFetchData(type, key) {
             // 3단계
             pageData = await getListPage(musicArr); // api, 목 데이터: musicList || API 데이터: musicArr
             // sessionStorage 덮어씌우기
-            sessionStorage.setItem('pageData', JSON.stringify(pageData));
+            sessionStorage.setItem('pageData', JSON.stringify(musicArr));
             // db 덮어씌우기
-            writeData('top100/musicList', pageData);
+            writeData('top100/musicList', musicArr);
             setLoadingPercent(100);
             await new Promise((res) => setTimeout(res, 300));
             setPage(pageData);

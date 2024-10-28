@@ -1,5 +1,4 @@
 import Head from 'next/head';
-import styles from '@/styles/Home.module.css';
 import CreateSwiper from '@/components/createSwiper';
 
 export default function Home() {

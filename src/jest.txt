@@ -57,6 +57,19 @@ spyOn(object, methodName)을 사용하여 해당 함수 추적 가능 // spyOn(w
     act(() => { dispatch({ type: "RESET" }) });
     const [updateState] = result.current;
 
+- fetch mock 방법
+: global.fetch = jest.fn().mockImplementation(() => Promise.resolve(값))
+  await 변수.json() 있을 때
+  : { json: () => Promise.resolve(값)}, 값에 대입
+
+- useContext mock 방법
+: jest.mock() 두번째 인자로 'react' 함수 mock 선언, useContext.mockReturnValue 선언
+  예시)
+  jest.mock('react', () => ({
+    ...jest.requireActual('react'),
+    useContext: jest.fn(),
+  }))
+
 Jest 기본 기능
 jest: https://jestjs.io/docs/expect
 DOM 기본 기능

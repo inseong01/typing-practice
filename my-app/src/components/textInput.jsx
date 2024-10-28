@@ -36,9 +36,9 @@ export default function TextInput({
     if (isFull || typingtextIdx < 0) return;
     // 태그 선택
     const liTags = document.getElementsByTagName('li');
-    const selectedTag = liTags[typingSentenceNum].children[typingtextIdx];
+    const selectedLetterTag = liTags[typingSentenceNum].children[typingtextIdx];
     // 태그 크기
-    const tagWidth = Number(selectedTag.getBoundingClientRect().width.toFixed(2));
+    const tagWidth = Number(selectedLetterTag.getBoundingClientRect().width.toFixed(2));
     dispatch({ type: 'CURSORMOVE', event: 'Typing', tagWidth });
   }
 
@@ -54,22 +54,22 @@ export default function TextInput({
     const typingtextIdx = txtLength;
     // 태그 선택
     const liTags = document.getElementsByTagName('li');
-    const liTagLength = liTags[typingSentenceNum].children.length;
-    const selectedTag = liTags[typingSentenceNum].children[typingtextIdx];
+    const selectedliTagLength = liTags[typingSentenceNum].children.length;
+    const selectedLetterTag = liTags[typingSentenceNum].children[typingtextIdx];
     // 작성 문자 길이 제한
-    if (0 > txtLength) return; // 무조건 한 글자는 입력돼서 0 포함, 0 이후 backspace 적용
-    if (liTagLength <= txtLength && !isBlur) return; // 문장 길이 일치하면 넘어감 (Enter)
+    if (0 > txtLength) return; // 무조건 한 글자는 입력, -1부터 backspace 적용
+    if (selectedliTagLength <= txtLength && !isBlur) return; // 문장 길이 일치하면 넘어감 (Enter)
     if (isBlur) {
       // 사라진 태그 선택
-      const selectedTag = liTags[typingSentenceNum].children[typingtextIdx - 1];
+      const selectedLetterTag = liTags[typingSentenceNum].children[typingtextIdx - 1];
       // 태그 크기
-      const tagWidth = Number(selectedTag.getBoundingClientRect().width.toFixed(2));
+      const tagWidth = Number(selectedLetterTag.getBoundingClientRect().width.toFixed(2));
       // 커서 이동
       dispatch({ type: 'CURSORMOVE', event: 'Backspace', tagWidth });
       return;
     }
     // 태그 크기
-    const tagWidth = Number(selectedTag.getBoundingClientRect().width.toFixed(2));
+    const tagWidth = Number(selectedLetterTag.getBoundingClientRect().width.toFixed(2));
     // 이전 문자가 현재 문자 길이보다 길 때
     if (composedText.length > txtLength) {
       // 커서 이동
@@ -98,10 +98,10 @@ export default function TextInput({
             dispatch({ type: 'CURSORMOVE', event: 'Enter', tagTop: 0 });
             break;
           }
-          // 태그 선택
-          const selectedTag = liTags[typingSentenceNum + 1];
+          // 태그 선택 (다음 줄)
+          const selectedLetterTag = liTags[typingSentenceNum + 1];
           // 태그 크기
-          const tagHeight = Number(selectedTag.getBoundingClientRect().height.toFixed(2));
+          const tagHeight = Number(selectedLetterTag.getBoundingClientRect().height.toFixed(2));
           dispatch({ type: 'CURSORMOVE', event: 'Enter', tagHeight });
           break;
         } else if (generatedSentence.length > typingtext.length) {
@@ -117,10 +117,10 @@ export default function TextInput({
           dispatch({ type: 'CURSORMOVE', event: 'Backspace', tagLeft: 0 });
           break;
         }
-        // 태그 선택
-        const selectedTag = liTags[typingSentenceNum].children[typingtextIdx];
+        // 태그 선택 (현재 문자)
+        const selectedLetterTag = liTags[typingSentenceNum].children[typingtextIdx];
         // 태그 크기
-        const tagWidth = Number(selectedTag.getBoundingClientRect().width.toFixed(2));
+        const tagWidth = Number(selectedLetterTag.getBoundingClientRect().width.toFixed(2));
         dispatch({ type: 'CURSORMOVE', event: 'Backspace', tagWidth });
         break;
       }
@@ -130,10 +130,10 @@ export default function TextInput({
         const typingtextIdx = typingtext.length - 1;
         // 작성 문자 길이 제한
         if (generatedSentence.length < typingtext.length + 1) return;
-        // 태그 선택
-        const selectedTag = liTags[typingSentenceNum].children[typingtextIdx + 1];
+        // 태그 선택 (다음 문자)
+        const selectedLetterTag = liTags[typingSentenceNum].children[typingtextIdx + 1];
         // 태그 크기
-        const tagWidth = Number(selectedTag.getBoundingClientRect().width.toFixed(2));
+        const tagWidth = Number(selectedLetterTag.getBoundingClientRect().width.toFixed(2));
         dispatch({ type: 'CURSORMOVE', event: 'Typing', tagWidth });
       }
     }

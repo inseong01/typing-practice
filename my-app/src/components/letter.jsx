@@ -3,15 +3,15 @@ import { memo, useEffect } from 'react';
 
 function Letter({ children, typingtext, sentenceArr, lyricTextNum, lyricSentenceNum, typingSentenceNum }) {
   const isTypingLetterIdxCorrect = typingtext && lyricSentenceNum === typingSentenceNum;
-  const storedSentences = sentenceArr[lyricSentenceNum];
+  const storedSentence = sentenceArr[lyricSentenceNum];
 
   // useEffect(() => {
   //   console.log('rendering');
   // });
 
   const cssName = isTypingLetterIdxCorrect ? (typingtext === children ? styles.correct : styles.wrong) : '';
-  const strCssName = !!storedSentences
-    ? storedSentences[lyricTextNum] === children
+  const strCssName = !!storedSentence
+    ? storedSentence[lyricTextNum] === children
       ? styles.correct
       : styles.wrong
     : cssName;
@@ -27,11 +27,11 @@ function Letter({ children, typingtext, sentenceArr, lyricTextNum, lyricSentence
 
 export default memo(Letter, (prev, next) => {
   return (
-    prev.lyricSentenceNum === next.lyricSentenceNum &&
     prev.typingSentenceNum === next.typingSentenceNum &&
-    prev.sentenceArr === next.sentenceArr &&
+    prev.lyricSentenceNum === next.lyricSentenceNum &&
     prev.lyricTextNum === next.lyricTextNum &&
-    prev.children === next.children &&
-    prev.typingtext === next.typingtext
+    prev.sentenceArr === next.sentenceArr &&
+    prev.typingtext === next.typingtext &&
+    prev.children === next.children
   );
 });

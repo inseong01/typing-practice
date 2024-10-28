@@ -7,6 +7,24 @@ import classNameCheck from './classNameCheck.test';
 import ResultPage from '../resultPage';
 userEvent.setup()
 
+const music = {
+  "trackId": 85264265,
+  "trackTitle": "Supernova",
+  "artists": [
+    {
+      "artistId": 3980296,
+      "artistName": "aespa",
+      "isGroup": true,
+      "imageUrl": "https://musicmeta-phinf.pstatic.net/artist/003/980/3980296.jpg?type=r300&v=20240524115312"
+    }
+  ],
+  "imageUrl": "https://musicmeta-phinf.pstatic.net/album/031/577/31577945.jpg?type=r480Fll&v=20240828151204",
+  "albumGenres": "댄스",
+  "currentRank": 2,
+  "lyric": "na\nz\na\nz\na\nz"
+};
+const artistName = ["aespa"];
+
 jest.mock('react', () => ({
   ...jest.requireActual('react'),
   useContext: jest.fn()
@@ -30,23 +48,6 @@ describe('ResultPage unit test : ', () => {
     beforeEach(() => {
       const setIsFinished = jest.fn()
       const setPageSheetIdx = jest.fn()
-      const music = {
-        "trackId": 85264265,
-        "trackTitle": "Supernova",
-        "artists": [
-          {
-            "artistId": 3980296,
-            "artistName": "aespa",
-            "isGroup": true,
-            "imageUrl": "https://musicmeta-phinf.pstatic.net/artist/003/980/3980296.jpg?type=r300&v=20240524115312"
-          }
-        ],
-        "imageUrl": "https://musicmeta-phinf.pstatic.net/album/031/577/31577945.jpg?type=r480Fll&v=20240828151204",
-        "albumGenres": "댄스",
-        "currentRank": 2,
-        "lyric": "na\nz\na\nz\na\nz"
-      }
-      const artistName = ["aespa"]
 
       render(<ResultPage
         setIsFinished={setIsFinished}
@@ -77,17 +78,17 @@ describe('ResultPage unit test : ', () => {
           case 'time': {
             const minute = parseInt(state.time / 60) === 0 ? undefined : parseInt(state.time / 60);
             const second = parseInt(state.time % 60) === 0 ? 0 : parseInt(state.time % 60);
-            expect(screen.getByText(`${second}초`, { exact: false }).textContent).toBe(`소요 시간: ${second}초`)
+            expect(screen.getByText(`${second}초`, { exact: false }).textContent).toBe(`- 소요 시간: ${second}초`)
             expect(screen.getByText(`${second}초`, { exact: false })).toBeVisible()
             break;
           }
           case 'accuracy': {
-            expect(screen.getByText(state[Object.keys(state)[i]], { exact: false }).textContent).toBe(`정확도: ${state.accuracy}%`)
+            expect(screen.getByText(state[Object.keys(state)[i]], { exact: false }).textContent).toBe(`- 정확도: ${state.accuracy}%`)
             expect(screen.getByText(state[Object.keys(state)[i]], { exact: false })).toBeVisible()
             break;
           }
           case 'typingSpeed': {
-            expect(screen.getByText(state[Object.keys(state)[i]], { exact: false }).textContent).toBe(`타수: ${state.typingSpeed}`)
+            expect(screen.getByText(state[Object.keys(state)[i]], { exact: false }).textContent).toBe(`- 타수: ${state.typingSpeed}`)
             expect(screen.getByText(state[Object.keys(state)[i]], { exact: false })).toBeVisible()
             break;
           }

@@ -150,11 +150,13 @@
 
   ```javascript
   // createSwiper.jsx
-  const list = getMusicList(top100);
-  const page = getListPage(list);
+  import useFetchData from '@/hook/useFetchData';
 
   export default function CreateSwiper() {
+    const [type, setType] = useState('LOAD');
     const [pageNumber, setPageNumber] = useState(0);
+    const { loadingPercent, page } = useFetchData(type);
+
     return (
         ...
         <SwiperSlides item={page[pageNumber]} />
@@ -169,11 +171,13 @@
       ...
         {item.map((value, idx) => {
           const { 
+            trackId, 
             currentRank, 
             artists, 
-            trackTitle
-            } = value;
-          const artistsName = artists.map((value) => value.artistName);
+            trackTitle, 
+            isLyric } = value;
+          const artistsNames = artists.map((value) => value.artistName);
+          const artist = artistsNames.join().replace(',', ', ');
           return (
               <div>
                 <div>
@@ -184,7 +188,7 @@
                     {trackTitle}
                   </div>
                   <div>
-                    {artistsName}
+                    {artist}
                   </div>
                 </div>
               </div>
@@ -195,14 +199,12 @@
   }
   ```
 - 반응    
-  **item** 인자가 가지고 있는 배열 길이 만큼 레이어가 생성됩니다. **page[pageNumber]** 는 **page** 객체의 `key-value`를 나타냅니다. **pageNumber** 변수가 증가하면 다음 페이지 배열을 전달합니다. 
+  **item** 인자가 가지고 있는 배열 길이 만큼 레이어가 생성됩니다. **page**는 객체 유형으로 해당 페이지 수에 맞는 목록을 가지고 있습니다. **page[pageNumber]** 는 **page** 객체의 `key-value`를 나타냅니다. 목차 페이지를 넘기면 **page**의 다음 프로퍼티의 값, **page[pageNumber]** 배열을 반환합니다.  
 
 - 활용    
 
-  - 실시간 차트 반영    
-  **createSwiper.jsx**에서 `API`를 호출하여 매 접속마다 목차를 실시간으로 생성할 수 있습니다. **getMusicList** 함수 인자를 `API` 반응값으로 할당할 수 있습니다. 
-
-    > 음원 사이트 API 호출 경로가 필요합니다.
+  - 커스텀 훅 확장    
+  **useFetchData.js**에서 **type**을 전달 받거나 변경할 때마다 해당 **type**에 맞는 `API`를 호출합니다. **type**을 추가하여 `useFetchData` 함수를 확장할 수 있습니다.
 
 ### 2.1.2. 목차넘김
 이번 차례는 목차넘김 기능을 안내합니다.
@@ -228,20 +230,21 @@
     }
     return (
       ...
-          <SwiperSlides item={page[pageNumber]} />
+        <div>
           <div onClick={onClickPrevPage}>
-            <img src="./img/prev_btn.png"/>
+            <img src="/img/prev_btn.png" alt="이전 페이지 아이콘" />
           </div>
-          <div onClick={onClickNextPage}>
-            <img src="./img/next_btn.png"/>
+          <divonClick={onClickNextPage}>
+            <img src="/img/next_btn.png" alt="다음 페이지 아이콘" />
           </div>
+        </div>
       ...
     );
   }
   ```
 - 반응    
-  **onClickPrevPage**, **onClickNextPage** 함수는 **pageNumber** 숫자를 증가시키거나 감소시킵니다. 각 함수에 부여된 조건은 **page** 객체 변수의 최대 길이, 최소 길이를 넘지 않도록 합니다.     
-  > **page**의 길이는 객체 **key**의 개수입니다. 
+  **onClickPrevPage**, **onClickNextPage** 함수는 **pageNumber** 숫자를 증가시키거나 감소시킵니다. 각 함수에 부여된 조건은 **page** 객체 프로퍼티의 길이 안에서 동작하도록 합니다.     
+  > **page**의 프로퍼티 길이는 전체 페이지 수 입니다. 
 
 ### 2.1.3. 목록이동
 이번 차례는 목록이동 기능을 안내합니다.   
@@ -258,18 +261,12 @@
         {item.map((value, idx) => {
           ...
           return (
-            <Link href={`/music/${trackId}`} key={idx}>
+            <Link key={idx} href={`/music/${trackId}`}>
               <div>
+                <div>{currentRank}</div>
                 <div>
-                  {currentRank}
-                </div>
-                <div>
-                  <div>
-                    {trackTitle}
-                  </div>
-                  <div>
-                    {artistsName}
-                  </div>
+                  <div>{trackTitle}</div>
+                  <div>{artist}</div>
                 </div>
               </div>
             </Link>
@@ -281,30 +278,24 @@
   ```
   ```javascript
   // src/pages/music/[id].jsx
+  import useFetchData from '@/hook/useFetchData';
+
   export const getServerSideProps = async (data) => {
     const trackId = await data.query.id;
-    const music = await musicList.find((item) => item.trackId === Number(trackId));
-    const artistName = await music.artists.map((value) => value.artistName);
-
-    if (music.lyric.length === 0) {
-      return {
-        redirect: {
-          destination: '/',
-          permanent: false,
-        },
-      };
-    }
-    return { props: { trackId, music, artistName } };
+    return { props: { trackId } };
   };
 
-  export default function Page({ trackId, music, artistName }) {
+  export default function Page({ trackId }) {
+    const { dataObj, pageSheet, loadingPercent } = useFetchData('ID', Number(trackId));
     ...
   }
   ```
 - 반응    
-  `<Link>` 태그는 지정한 **herf**로 이동시킵니다. `music/${trackId}` 주소는 `pages/music` 폴더의 `trackId.jsx` 파일을 실행합니다. `trackId`는 사용자의 선택에 따라 변경됨으로 **경로 파라미터** 동적 할당을 허용해야 합니다. `[id]` 파일명으로 파일을 생성하여 경로 동적할당을 허용할 수 있습니다. 또한 `[id].jsx` 파일은 현재 **url**에 접근할 수 있습니다.    
+  `<Link>` 태그는 주소를 지정한 **herf**로 이동시킵니다. `music/${trackId}` 주소는 `pages/music` 폴더의 `[id].jsx` 파일을 실행합니다. `trackId`는 사용자의 목차 항목 선택에 따라 변경됨으로 **경로 파라미터** 동적 할당을 허용해야 합니다. `[id]` 파일명으로 파일을 생성하여 경로 동적할당을 허용할 수 있습니다. 또한 `[id].jsx` 파일은 `getServerSideProps` 함수로 **url**에 접근할 수 있습니다.    
 
-  음악 가사가 없다면 초기화면으로 이동, 입력화면으로 진입하지 않습니다. 
+  주소에서 가져온 **trackId**는 `useFetchData`의 두 번째 인자로 할당됩니다. **trackId**는 문자열 형태로 가져와지기 때문에 엄격검사를 통과하기 위해 숫자로 형변환을 합니다. `FireBase`에서 **trackId**와 일치하는 항목이 있다면 함수 내부 동작에 따라 **dataObj**, **pageSheet** 변수를 반환합니다. **dataObj**는 항목의 메타데이터를, **pageSheet**은 항목의 문장 배열을 가지고 있습니다. 
+
+  **loadingPercent**가 `100`이 되면 **pageSheet**의 문장 배열을 화면에 생성합니다.
 
   `<Link>` 태그는 `DOM`에서 `<a>` 태그로 표시됩니다. 
 

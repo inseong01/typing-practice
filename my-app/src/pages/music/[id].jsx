@@ -1,8 +1,8 @@
 import Sentence from '@/components/sentence';
 import ResultPage from '@/components/resultPage';
 import styles from '@/styles/[id].module.css';
-import { Context } from '../_app';
 import Loading from '@/components/loading';
+import { Context } from '../_app';
 
 import { useContext, useEffect, useState } from 'react';
 import useFetchData from '@/hook/useFetchData';

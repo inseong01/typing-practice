@@ -4,19 +4,39 @@ import userEvent from '@testing-library/user-event';
 
 import classNameCheck from './classNameCheck.test';
 import CreateSwiper from '../createSwiper';
+import pageData from '../../../public/pageData.json';
+import useFetchData, { readData, updateData } from '@/hook/useFetchData';
 userEvent.setup();
 
 jest.mock('../SwiperSlides', () => () => {
   return <div>SwiperSlides</div>
 })
+jest.mock('../loading', () => () => {
+  return <div>loading</div>
+})
+jest.mock('../../hook/useFetchData');
+
+const updateTime = {
+  click: "2024/10/28 11:07:09:023",
+  next: "2024/10/29 07:00:00:000"
+}
 
 describe('CreateSwiper unit test : ', () => {
   let pageLength = 3;
   let pageNumber = 1;
 
+  beforeEach(() => {
+    // useFetchData mock
+    useFetchData.mockReturnValue({ page: pageData });
+    // readData mock
+    readData.mockReturnValue(updateTime);
+    updateData.mockImplementation(() => { });
+  })
+
   test('className check', () => {
     render(<CreateSwiper />);
-    const classNameArr = ['categories', 'main-title', 'btn-wrap', 'btn', 'btn']
+    const classNameArr = ['categories', 'main-title', 'updateBtn', 'disable', 'list-arr', 'btn-wrap', 'btn', 'btn']
+    // disable / able은 update 상태에 따라 다름
     classNameCheck(classNameArr);
   })
 
@@ -67,5 +87,31 @@ describe('CreateSwiper unit test : ', () => {
     await userEvent.click(rightClick);
     expect(onClickNextPage).toHaveBeenCalledTimes(3)
     expect(pageNumber).toBe(2);
+  })
+
+  test('onClick updateBtn', async () => {
+    const onClickUpdateHandler = () => {
+      updateData();
+    }
+    let isClickAble = true;
+
+    render(<div
+      data-testid="btn_update"
+      onClick={onClickUpdateHandler}
+    >
+      <p className={isClickAble ? 'able' : 'disable'}>업데이트</p>
+    </div>)
+
+    const btn = screen.getByTestId('btn_update');
+    const btnProps = screen.getByText('업데이트');
+
+    expect(btnProps).toHaveClass('able');
+
+    if (btnProps.className === 'able') {
+      expect(updateData).toHaveBeenCalledTimes(0);
+      await userEvent.click(btn);
+      expect(updateData).toHaveBeenCalledTimes(1);
+      return;
+    }
   })
 })

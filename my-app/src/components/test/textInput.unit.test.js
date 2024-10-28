@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { act, render, renderHook, screen } from '@testing-library/react';
+import { act, getByTestId, render, renderHook, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React, { useContext, useReducer } from 'react';
 
@@ -94,28 +94,23 @@ describe('TextInput test : ', () => {
 
   test('Count Enter events', async () => {
     const sentenceArr = [];
-    const setTypingText = jest.fn()
-      .mockReturnValueOnce('')
-      .mockReturnValueOnce('f')
-      .mockReturnValueOnce('foofoofoofoo')
-      .mockReturnValueOnce('foofoofoofoof')
-      .mockReturnValueOnce('foofoofoofo');
+    const setTypingText = jest.fn();
     const setSentenceArr = jest.fn();
-    const typingSentenceNum = 0;
     const setTypingSentenceNum = jest.fn();
-
 
     jest.spyOn(window, 'alert').mockImplementation(() => { });
 
-    // 1번째 호출, setTypingText.length(0) !== currentTextArr.length(11)
-    const { rerender } = render(<TextInput
-      typingtext={setTypingText()}
-      sentenceArr={sentenceArr}
-      setTypingText={setTypingText}
-      currentTextArr={currentTextArr}
-      setSentenceArr={setSentenceArr}
-      typingSentenceNum={typingSentenceNum}
-      setTypingSentenceNum={setTypingSentenceNum} />)
+    const { rerender } = render(
+      <TextInput
+        typingtext={''}
+        sentenceArr={sentenceArr}
+        setTypingText={setTypingText}
+        currentTextArr={currentTextArr}
+        setSentenceArr={setSentenceArr}
+        typingSentenceNum={0}
+        setTypingSentenceNum={setTypingSentenceNum}
+      />
+    )
 
     const rerenderComponent = (typingtext) => {
       return rerender(<TextInput
@@ -124,71 +119,49 @@ describe('TextInput test : ', () => {
         setTypingText={setTypingText}
         currentTextArr={currentTextArr}
         setSentenceArr={setSentenceArr}
-        typingSentenceNum={typingSentenceNum}
+        typingSentenceNum={0}
         setTypingSentenceNum={setTypingSentenceNum} />)
     }
 
-    expect(setTypingText).toHaveBeenCalledTimes(1);
-    expect(setSentenceArr).toHaveBeenCalledTimes(0);
-    expect(setTypingSentenceNum).toHaveBeenCalledTimes(0);
+    const ul = `
+    <ul>
+      <li>
+        <span>그</span>
+        <span>런</span>
+        <span> </span>
+        <span>날</span>
+        <span>이</span>
+        <span> </span>
+        <span>있</span>
+        <span>을</span>
+        <span>까</span>
+        <span>요</span>
+        <span>?</span>
+      </li>
+      <li>
+        <span>두</span>
+        <span> </span>
+        <span>번</span>
+        <span>째</span>
+        <span> </span>
+        <span>문</span>
+        <span>장</span>
+      </li>
+    </ul>
+    `
+    document.querySelector('body').insertAdjacentHTML('beforeend', ul);
+
+    // typingtext가 currentText보다 적을 때, 울림
     expect(window.alert).toHaveBeenCalledTimes(0);
     await userEvent.keyboard('{Enter}');
-    expect(setTypingText).toHaveBeenCalledTimes(1);
-    expect(setSentenceArr).toHaveBeenCalledTimes(0);
-    expect(setTypingSentenceNum).toHaveBeenCalledTimes(0);
     expect(window.alert).toHaveBeenCalledTimes(1);
 
-    // 2번째 호출, setTypingText.length(1) !== currentTextArr.length(11)
-    rerenderComponent(setTypingText());
+    rerenderComponent('01234567891');
 
-    expect(setTypingText).toHaveBeenCalledTimes(2);
-    expect(setSentenceArr).toHaveBeenCalledTimes(0);
-    expect(setTypingSentenceNum).toHaveBeenCalledTimes(0);
+    // typingtext가 currentText와 일치할 때, 울리지 않음
     expect(window.alert).toHaveBeenCalledTimes(1);
     await userEvent.keyboard('{Enter}');
-    expect(setTypingText).toHaveBeenCalledTimes(2);
-    expect(setSentenceArr).toHaveBeenCalledTimes(0);
-    expect(setTypingSentenceNum).toHaveBeenCalledTimes(0);
-    expect(window.alert).toHaveBeenCalledTimes(2);
-
-    // 3번째 호출, setTypingText.length(12) !== currentTextArr.length(11)
-    rerenderComponent(setTypingText());
-
-    expect(setTypingText).toHaveBeenCalledTimes(3);
-    expect(setSentenceArr).toHaveBeenCalledTimes(0);
-    expect(setTypingSentenceNum).toHaveBeenCalledTimes(0);
-    expect(window.alert).toHaveBeenCalledTimes(2);
-    await userEvent.keyboard('{Enter}');
-    expect(setTypingText).toHaveBeenCalledTimes(3);
-    expect(setSentenceArr).toHaveBeenCalledTimes(0);
-    expect(setTypingSentenceNum).toHaveBeenCalledTimes(0);
-    expect(window.alert).toHaveBeenCalledTimes(3);
-
-    // 4번째 호출, setTypingText.length(13) !== currentTextArr.length(11)
-    rerenderComponent(setTypingText());
-
-    expect(setTypingText).toHaveBeenCalledTimes(4);
-    expect(setSentenceArr).toHaveBeenCalledTimes(0);
-    expect(setTypingSentenceNum).toHaveBeenCalledTimes(0);
-    expect(window.alert).toHaveBeenCalledTimes(3);
-    await userEvent.keyboard('{Enter}');
-    expect(setTypingText).toHaveBeenCalledTimes(4);
-    expect(setSentenceArr).toHaveBeenCalledTimes(0);
-    expect(setTypingSentenceNum).toHaveBeenCalledTimes(0);
-    expect(window.alert).toHaveBeenCalledTimes(4);
-
-    // 5번째 호출, setTypingText.length(11) === currentTextArr.length(11)
-    rerenderComponent(setTypingText());
-
-    expect(setTypingText).toHaveBeenCalledTimes(5);
-    expect(setSentenceArr).toHaveBeenCalledTimes(0);
-    expect(setTypingSentenceNum).toHaveBeenCalledTimes(0);
-    expect(window.alert).not.toHaveBeenCalledTimes(0);
-    await userEvent.keyboard('{Enter}');
-    expect(setTypingText).toHaveBeenCalledTimes(6); // setTypingText(''), +1
-    expect(setSentenceArr).toHaveBeenCalledTimes(1);
-    expect(setTypingSentenceNum).toHaveBeenCalledTimes(1);
-    expect(window.alert).not.toHaveBeenCalledTimes(1);
+    expect(window.alert).toHaveBeenCalledTimes(1);
   })
 
   describe('Dispatch type "CURSORMOVE"', () => {
@@ -196,6 +169,7 @@ describe('TextInput test : ', () => {
       const setTypingText = jest.fn();
       const setSentenceArr = jest.fn();
       const setTypingSentenceNum = jest.fn();
+      let typingSentenceNum = 0
 
       const { rerender } = render(<TextInput
         typingtext={'그런 날이 있을까요?'}
@@ -203,14 +177,17 @@ describe('TextInput test : ', () => {
         setTypingText={setTypingText}
         currentTextArr={currentTextArr}
         setSentenceArr={setSentenceArr}
-        typingSentenceNum={0}
+        typingSentenceNum={typingSentenceNum}
         setTypingSentenceNum={setTypingSentenceNum} />
       )
       expect(dispatchMock).toHaveBeenCalledTimes(0);
 
       // 문장 넘김
-      await userEvent.keyboard('{Enter}')
-      expect(dispatchMock).toHaveBeenCalledWith({ type: 'CURSORMOVE', event: 'Enter', tagHeight: 25.5 });
+      await userEvent.keyboard('{Enter}');
+      const liTags = document.getElementsByTagName('li');
+      const selectedLetterTag = liTags[typingSentenceNum + 1];
+      const tagHeight = Number(selectedLetterTag.getBoundingClientRect().height.toFixed(2));
+      expect(dispatchMock).toHaveBeenCalledWith({ type: 'CURSORMOVE', event: 'Enter', tagHeight });
       expect(dispatchMock).toHaveBeenCalledTimes(1);
 
       rerender(<TextInput

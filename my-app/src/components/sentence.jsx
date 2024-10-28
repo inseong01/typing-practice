@@ -48,17 +48,16 @@ function Sentence({ pageSheet, pageSheetIdx, setIsFinished, onEnterNextPage }) {
   }, [sentenceArr]);
 
   useEffect(() => {
-    if (!isFirstTime || !typingtext) return;
-    start = Date.now();
-    isFirstTime = false;
-  }, [typingtext]);
-
-  useEffect(() => {
-    if (!typingtext) return;
     // 방금 작성한 문자 언어 검사
+    if (!typingtext) return;
     const lastChar = typingtext[typingtext.length - 1];
     const lang = detectLanguage(lastChar, currentLang);
     setCurrentLang(lang);
+
+    // 첫 입력 감지
+    if (!isFirstTime) return;
+    start = Date.now();
+    isFirstTime = false;
   }, [typingtext]);
 
   return (

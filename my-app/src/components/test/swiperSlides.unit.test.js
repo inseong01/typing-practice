@@ -121,7 +121,7 @@ describe('SwiperSlides unit test : ', () => {
   })
 
   test('className check', () => {
-    classNameCheck(['list-arr', 'list', 'number', 'content-box', 'title', 'descript']);
+    classNameCheck(['list', 'number', 'content-box', 'title', 'descript']);
   })
 
   test('TextContent is equal to the item value', () => {

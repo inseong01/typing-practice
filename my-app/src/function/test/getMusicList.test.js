@@ -1,9 +1,14 @@
 import top100 from '../../../public/top100.json';
 import getMusicList from '../getMusicList';
 
+global.fetch = jest.fn().mockImplementation(() => Promise.resolve({ json: () => Promise.resolve(top100) }));
 
 describe('getMusicList test : ', () => {
-  const list = getMusicList(top100);
+  let list;
+
+  beforeEach(async () => {
+    list = await getMusicList();
+  })
 
   test('List has 100 musics', () => {
     expect(list).toHaveLength(100);

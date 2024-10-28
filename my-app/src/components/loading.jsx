@@ -66,7 +66,7 @@ export default function Loading({ loadingPercent, type, error }) {
       );
     }
     default: {
-      return <h1>Nothing</h1>;
+      return console.error('Loading Error');
     }
   }
 }
