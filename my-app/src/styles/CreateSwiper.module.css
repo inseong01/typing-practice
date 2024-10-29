@@ -62,6 +62,9 @@
   transform: translate(-50%, -50%);
   z-index: 9;
 }
+.modal:focus {
+  outline: none;
+}
 
 /* list-arr */
 .list-arr {

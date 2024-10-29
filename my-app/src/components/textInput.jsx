@@ -15,7 +15,7 @@ export default function TextInput({
   typingSentenceNum,
   setTypingSentenceNum,
 }) {
-  const { dispatch, state } = useContext(Context);
+  const { dispatch } = useContext(Context);
 
   function onChangeHandler(e) {
     const txt = e.target.value;

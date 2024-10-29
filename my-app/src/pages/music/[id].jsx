@@ -9,10 +9,10 @@ import useFetchData from '@/hook/useFetchData';
 
 export const getServerSideProps = async (data) => {
   const trackId = await data.query.id;
-  return { props: { trackId, error: null } };
+  return { props: { trackId } };
 };
 
-export default function Page({ trackId, error }) {
+export default function Page({ trackId }) {
   const { dataObj, pageSheet, loadingPercent } = useFetchData('ID', Number(trackId));
   const [pageSheetIdx, setPageSheetIdx] = useState(0);
   const [isFinished, setIsFinished] = useState(false);

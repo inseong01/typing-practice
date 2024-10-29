@@ -49,9 +49,7 @@ export async function queryReadData(category, value, key) {
 
 // db 파일 덮어씌우기
 export function writeData(category, data) {
-  set(ref(db, category), {
-    data,
-  });
+  set(ref(db, category), data);
 }
 
 // db 파일 업데이트

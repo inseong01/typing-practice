@@ -10,9 +10,11 @@ let isFirstTime = true;
 let totalSentenceObj = {};
 
 function detectLanguage(char = '', current) {
-  const code = char.charCodeAt(0);
+  // const code = char.charCodeAt(0);
+  const en = /[a-z]/gi.test(char);
   const ko = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/g.test(char);
-  if ((code >= 0x0041 && code <= 0x005a) || (code >= 0x0061 && code <= 0x007a)) {
+  if (en) {
+    // if ((code >= 0x0041 && code <= 0x005a) || (code >= 0x0061 && code <= 0x007a)) {
     return '영';
   } else if (ko) {
     return '한';
@@ -26,7 +28,7 @@ function Sentence({ pageSheet, pageSheetIdx, setIsFinished, onEnterNextPage }) {
   const [typingSentenceNum, setTypingSentenceNum] = useState(0);
   const [sentenceArr, setSentenceArr] = useState([]);
   const [currentLang, setCurrentLang] = useState('');
-  const { dispatch, state } = useContext(Context);
+  const { dispatch } = useContext(Context);
 
   useEffect(() => {
     if (sentenceArr.length === 0) return;

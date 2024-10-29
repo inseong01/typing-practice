@@ -22,7 +22,7 @@ export function reducer(state, action) {
       const totalPageCount = Object.keys(pageSheet).length;
       const pageSentenceLength = totalSentenceObj[i].length;
       const sentenceLength = totalSentenceObj[i][j].length;
-
+      // 오타계산
       let wrongTextCount = 0;
       let totalTextCount = 0;
       for (let i = 0; i < totalPageCount; i++) {
@@ -36,7 +36,7 @@ export function reducer(state, action) {
           }
         }
       }
-
+      // 그외 계산
       const time = ((end - start) / 1000).toFixed(1);
       const accuracy = Number((((totalTextCount - wrongTextCount) / totalTextCount) * 100).toFixed(1));
       const typingSpeed = Number(((totalTextCount / time) * 60).toFixed(1));
