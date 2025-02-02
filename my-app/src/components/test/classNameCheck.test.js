@@ -5,14 +5,13 @@ import { screen } from '@testing-library/react';
   classNameCheck 테스트
   
   - 사옹방법
-    1. 본 테스트 파일에서 testObj 객체 변수 생성 
-    2. classNameCheck 함수로 검사할 클래스명 문자열 배열 전달
+    1. classNameCheck 함수로 검사할 클래스명 문자열 배열 전달
         ㄴ 검사하고자 하는 클래스명 삽입, 컴포넌트에서 중복되는 클래스명 추가 작성 상관 없음
     3. 예외) 모킹 컴포넌트가 있을 때, 작성한 태크에도 className을 작성해야 함 
     **test() 함수로 감싸서 사용 권장**
 
   - 검사 제외 항목
-    : 조건부 className, 띄어쓰기가 포함된 클래스명(첫번째 클래스명으로 검사됨), no role 태그 검사 불가
+    : 조건부 className, 띄어쓰기가 포함된 클래스명(첫번째 클래스명으로 검사됨), no role 태그 검사 불가, input type: 'password' 선택 안 됨
 
   - 에러 설명
     1. "Wrong className is contained in checkClassNames variable"
